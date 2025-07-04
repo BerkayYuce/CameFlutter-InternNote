@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/password_page.dart';
+import 'package:login_page_flutter/register_page.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,7 +32,7 @@ class LoginPage extends StatelessWidget {
         child: Center(
           child: Container(
             padding: EdgeInsets.all(20),
-            margin:  EdgeInsets.all(20),
+            margin:  EdgeInsets.all(9),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(15),
@@ -56,7 +57,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   child:  Icon(
                     Icons.person,
-                    size: 100,
+                    size: 150,
                     color: Colors.blue,
                   ),
                 ),
@@ -86,13 +87,14 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 300),
+                  margin: EdgeInsets.only(bottom: 250),
+                  alignment: Alignment.bottomRight,
                   child: GestureDetector(
                     onTap: (){
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) => const PasswordPage(),));
                     },
-                    child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline)),
+                    child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
 
                   ),
                 ),
@@ -106,33 +108,62 @@ class LoginPage extends StatelessWidget {
                         child: const Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline)),),
                   ), */
                 // Giriş Butonu
-                Container(
-                  width: 106,  //200
-                  height: 42, //45
-                  alignment: Alignment.bottomCenter,
-                  decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      spreadRadius: 5,
-                      blurRadius: 15,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Giriş butonuna basınca yapılacak işlem
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Giriş Yapıldı'),
+                Row(
+                  children: [
+                    Container(
+                      width: 105,  //200
+                      height: 40, //45
+                      margin: EdgeInsets.only(left: 17),
+                      alignment: Alignment.bottomLeft,
+                      decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withValues(alpha: 0.5),
+                          spreadRadius: 5,
+                          blurRadius: 15,
+                          offset: Offset(0, 3), // changes position of shadow
                         ),
-                      );
-                    },
-                    child:  Text('Giriş Yap'),
-                  ),
+                      ],
+                    ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          // Giriş butonuna basınca yapılacak işlem
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Giriş Yapıldı'),
+                            ),
+                          );
+                        },
+                        child:  Text('Giriş Yap'),
+                      ),
+                    ),
+                    Container(
+                        width: 96,  //200
+                        height: 40, //45
+                        margin: EdgeInsets.only(left: 60),
+                        alignment: Alignment.bottomRight,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withValues(alpha: 0.5),
+                              spreadRadius: 5,
+                              blurRadius: 15,
+                              offset: Offset(0, 3), // changes position of shadow
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          onPressed:(){
+                            Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));
+                          },
+                          child: Text('Kayıt ol'),
+                        )
+                    )
+                  ],
                 ),
               ],
             ),

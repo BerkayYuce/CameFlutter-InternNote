@@ -6,16 +6,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Password Page',
+      title: 'Register Page',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const PasswordPage(),
+      home: const RegisterPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-class PasswordPage extends StatelessWidget {
-  const PasswordPage ({super.key});
+class RegisterPage extends StatelessWidget {
+  const RegisterPage ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +27,8 @@ class PasswordPage extends StatelessWidget {
       ),
       body: SafeArea(child: Center(
         child: Container(
-          padding: EdgeInsets.all(20),
-          margin:  EdgeInsets.all(20),
+          padding: EdgeInsets.all(10),
+          margin:  EdgeInsets.all(15),
           color: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -56,7 +56,16 @@ class PasswordPage extends StatelessWidget {
               ),
 
               Container(
-                margin: EdgeInsets.only(top: 100, left: 20, right: 20),
+                margin: EdgeInsets.only(top: 50, left: 20, right: 20),
+                child: TextField(
+                  decoration: InputDecoration(border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.person),
+                    labelText: 'Kullanıcı adı',
+                  ),
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 20, left: 20, right: 20),
                 child: TextField(
                   decoration: InputDecoration(border: OutlineInputBorder(),
                       prefixIcon: Icon(Icons.lock),
@@ -76,7 +85,7 @@ class PasswordPage extends StatelessWidget {
               Container(
                 height: 42,
                 width: 95,
-                margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
+                margin: EdgeInsets.symmetric(horizontal: 100,vertical: 90),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
