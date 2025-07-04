@@ -61,23 +61,23 @@ class LoginPage extends StatelessWidget {
                     color: Colors.blue,
                   ),
                 ),
-
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
                   child:  TextField(
+                    autofocus: false,
                     decoration: InputDecoration(border: OutlineInputBorder(),
                       labelText: 'Kullanıcı Adı',
                       prefixIcon: Icon(Icons.person),
                     ),
                   ),
                 ),
-
                 // Şifre
                   Expanded(
                     child:
                     Container(
                       child:  TextField(
+                        autofocus: false,
                         obscureText: true,
                         decoration: InputDecoration(border: OutlineInputBorder(),
                           labelText: 'Şifre',
@@ -90,30 +90,27 @@ class LoginPage extends StatelessWidget {
                   margin: EdgeInsets.only(bottom: 250),
                   alignment: Alignment.bottomRight,
                   child: GestureDetector(
-                    onTap: (){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const PasswordPage(),));
-                    },
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PasswordPage(),));},
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
-
                   ),
                 ),
-
-                  /*
-                  Container(
-                    margin: EdgeInsets.only(),
-                    child: TextButton(
-
-                        onPressed: ,
-                        child: const Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline)),),
-                  ), */
+                /*
+                Container(
+                  child: GestureDetector(
+                    onTap: (){
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => const RegisterPage(),));
+                    },
+                    child: Text('Hesabın yok mu? Kayıt Ol',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
+                  ),
+                ), */
                 // Giriş Butonu
                 Row(
                   children: [
                     Container(
                       width: 105,  //200
                       height: 40, //45
-                      margin: EdgeInsets.only(left: 17),
+                      margin: EdgeInsets.only(left: 25),
                       alignment: Alignment.bottomLeft,
                       decoration: BoxDecoration(
                       color: Colors.white,
@@ -139,6 +136,7 @@ class LoginPage extends StatelessWidget {
                         child:  Text('Giriş Yap'),
                       ),
                     ),
+
                     Container(
                         width: 96,  //200
                         height: 40, //45
@@ -156,6 +154,9 @@ class LoginPage extends StatelessWidget {
                             ),
                           ],
                         ),
+                        /*child: IconButton(onPressed: (){
+                          Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));
+                        }, icon: Icon(Icons.add)),*/
                         child: ElevatedButton(
                           onPressed:(){
                             Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));

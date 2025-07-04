@@ -49,7 +49,7 @@ class RegisterPage extends StatelessWidget {
                   ],
                 ),
                 child:  Icon(
-                  Icons.person,
+                  Icons.person_add,
                   size: 150,
                   color: Colors.blue,
                 ),
@@ -59,7 +59,7 @@ class RegisterPage extends StatelessWidget {
                 margin: EdgeInsets.only(top: 50, left: 20, right: 20),
                 child: TextField(
                   decoration: InputDecoration(border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
+                    prefixIcon: Icon(Icons.person_add),
                     labelText: 'Kullanıcı adı',
                   ),
                 ),
