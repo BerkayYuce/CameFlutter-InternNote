@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_page_flutter/home_page.dart';
 import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
 
@@ -127,11 +128,15 @@ class LoginPage extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () {
                           // Giriş butonuna basınca yapılacak işlem
+
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => home_page(),));
+
+                          /*
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Giriş Yapıldı'),
                             ),
-                          );
+                          ); */
                         },
                         child:  Text('Giriş Yap'),
                       ),
