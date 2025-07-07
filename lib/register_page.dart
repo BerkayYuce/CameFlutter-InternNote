@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:login_page_flutter/main.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 class MyApp extends StatelessWidget {
@@ -52,10 +54,12 @@ class RegisterPage extends StatelessWidget {
               ),
               Container(
                 height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 90),
-                decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
+                /*
+                  decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
                 child: ElevatedButton(
                     onPressed: (){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Şifre Değişti'),),);},
-                    child: Text('Onayla')),
+                    child: Text('Onayla')), */
+                child:  CustomButton(destination: LoginPage(), text: "Onayla"),
               ),
             ],
           ),

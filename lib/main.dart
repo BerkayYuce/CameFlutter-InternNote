@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_page_flutter/home_page.dart';
 import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 void main() => runApp(const MyApp());
@@ -56,8 +57,7 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 250),
-                  alignment: Alignment.bottomRight,
+                  margin: EdgeInsets.only(bottom: 250), alignment: Alignment.bottomRight,
                   child: GestureDetector(
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PasswordPage(),));},
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
@@ -68,22 +68,11 @@ class LoginPage extends StatelessWidget {
                   children: [
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25),alignment: Alignment.bottomLeft,
-                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3), ),],
-                    ),
-                      child: ElevatedButton(
-                        onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => home_page(),));},
-                        child:  Text('Giriş Yap'),
-                      ),
+                      child: CustomButton(destination: home_page(), text: "Giriş yap"),
                     ),
                     Container(
-                        width: 96,height: 40,margin: EdgeInsets.only(left: 60),
-                        alignment: Alignment.bottomRight,
-                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
-                        child: ElevatedButton(
-                          onPressed:(){Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));},
-                          child: Text('Kayıt ol'),
-                        )
+                        width: 96,height: 40,margin: EdgeInsets.only(left: 60),alignment: Alignment.bottomRight,
+                         child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol'),
                     )
                   ],
                 ),

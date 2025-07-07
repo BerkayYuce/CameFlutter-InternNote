@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:login_page_flutter/home_page.dart';
+import 'package:login_page_flutter/main.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 class MyApp extends StatelessWidget {
@@ -48,9 +51,9 @@ class PasswordPage extends StatelessWidget {
                 child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false),
               ),
               Container(
-                height: 42,
-                width: 95,
-                margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
+                height: 42,width: 95, margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
+                child:  CustomButton(destination: LoginPage(), text: "Onayla"),
+                /*
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -58,7 +61,7 @@ class PasswordPage extends StatelessWidget {
                 ),
                 child: ElevatedButton(
                     onPressed: (){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Şifre Değişti'),),);},
-                    child: Text('Onayla')),
+                    child: Text('Onayla')), */
               ),
             ],
           ),
