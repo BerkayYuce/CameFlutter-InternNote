@@ -21,6 +21,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      onTapUpOutside: (event) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       autofocus: widget.autofocus,
       decoration: InputDecoration(border: OutlineInputBorder(),
         labelText: widget.label,

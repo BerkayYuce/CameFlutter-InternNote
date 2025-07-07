@@ -48,7 +48,7 @@ class LoginPage extends StatelessWidget {
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
-                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: false),
+                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true),
                 ),
                 // Şifre
                   Expanded(

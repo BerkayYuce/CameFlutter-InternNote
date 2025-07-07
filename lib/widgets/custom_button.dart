@@ -8,7 +8,6 @@ class CustomButton extends StatefulWidget {
 
   CustomButton({
     super.key,
-    //required this.page,
     required this.destination,
     required this.text,
   });
