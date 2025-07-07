@@ -107,7 +107,7 @@ class home_page extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Hoşgeldin Berkay',
+                  'Hoşgeldin Kullanıcı',
                   style: TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: 8),

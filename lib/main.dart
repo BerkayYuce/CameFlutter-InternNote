@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:login_page_flutter/home_page.dart';
 import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 void main() => runApp(const MyApp());
 
@@ -32,59 +33,26 @@ class LoginPage extends StatelessWidget {
       body: SafeArea(
         child: Center(
           child: Container(
-            padding: EdgeInsets.all(20),
-            margin:  EdgeInsets.all(9),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-            ),
+            padding: EdgeInsets.all(20),margin:  EdgeInsets.all(9),
+            decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(15),),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 // İkon
                 Container(
                   margin:  EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(
-                    color: Colors.white70,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 0.5),
-                        spreadRadius: 5,
-                        blurRadius: 15,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child:  Icon(
-                    Icons.person,
-                    size: 150,
-                    color: Colors.blue,
-                  ),
+                  decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5, blurRadius: 15,offset: Offset(0, 3),),],),
+                  child:  Icon(Icons.person,size: 150,color: Colors.blue,),
                 ),
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
-                  child:  TextField(
-                    autofocus: false,
-                    decoration: InputDecoration(border: OutlineInputBorder(),
-                      labelText: 'Kullanıcı Adı',
-                      prefixIcon: Icon(Icons.person),
-                    ),
-                  ),
+                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: false),
                 ),
                 // Şifre
                   Expanded(
-                    child:
-                    Container(
-                      child:  TextField(
-                        autofocus: false,
-                        obscureText: true,
-                        decoration: InputDecoration(border: OutlineInputBorder(),
-                          labelText: 'Şifre',
-                          prefixIcon: Icon(Icons.lock),
-                        ),
-                      ),
+                    child: Container(
+                        child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false)
                     ),
                   ),
                 Container(
@@ -95,77 +63,25 @@ class LoginPage extends StatelessWidget {
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
                   ),
                 ),
-                /*
-                Container(
-                  child: GestureDetector(
-                    onTap: (){
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => const RegisterPage(),));
-                    },
-                    child: Text('Hesabın yok mu? Kayıt Ol',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
-                  ),
-                ), */
                 // Giriş Butonu
                 Row(
                   children: [
                     Container(
-                      width: 105,  //200
-                      height: 40, //45
-                      margin: EdgeInsets.only(left: 25),
-                      alignment: Alignment.bottomLeft,
-                      decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withValues(alpha: 0.5),
-                          spreadRadius: 5,
-                          blurRadius: 15,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
+                      width: 105,height: 40,margin: EdgeInsets.only(left: 25),alignment: Alignment.bottomLeft,
+                      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),
+                      boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3), ),],
                     ),
                       child: ElevatedButton(
-                        onPressed: () {
-                          // Giriş butonuna basınca yapılacak işlem
-
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => home_page(),));
-
-                          /*
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Giriş Yapıldı'),
-                            ),
-                          ); */
-                        },
+                        onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => home_page(),));},
                         child:  Text('Giriş Yap'),
                       ),
                     ),
-
                     Container(
-                        width: 96,  //200
-                        height: 40, //45
-                        margin: EdgeInsets.only(left: 60),
+                        width: 96,height: 40,margin: EdgeInsets.only(left: 60),
                         alignment: Alignment.bottomRight,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withValues(alpha: 0.5),
-                              spreadRadius: 5,
-                              blurRadius: 15,
-                              offset: Offset(0, 3), // changes position of shadow
-                            ),
-                          ],
-                        ),
-                        /*child: IconButton(onPressed: (){
-                          Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));
-                        }, icon: Icon(Icons.add)),*/
+                        decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
                         child: ElevatedButton(
-                          onPressed:(){
-                            Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));
-                          },
+                          onPressed:(){Navigator.push(context,MaterialPageRoute(builder: (context) => const RegisterPage(),));},
                           child: Text('Kayıt ol'),
                         )
                     )

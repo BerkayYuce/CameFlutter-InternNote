@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -36,42 +37,15 @@ class PasswordPage extends StatelessWidget {
               // İkon
               Container(
                 margin:  EdgeInsets.only(bottom: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white70,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      spreadRadius: 5,
-                      blurRadius: 15,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
-                ),
-                child:  Icon(
-                  Icons.person,
-                  size: 150,
-                  color: Colors.blue,
-                ),
-              ),
-
+                decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
+                child:  Icon(Icons.person, size: 150, color: Colors.blue,),),
               Container(
                 margin: EdgeInsets.only(top: 100, left: 20, right: 20),
-                child: TextField(
-                  decoration: InputDecoration(border: OutlineInputBorder(),
-                      prefixIcon: Icon(Icons.lock),
-                      labelText: 'Şifre'
-                  ),
-                ),
+                child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20,right: 20),
-                child: TextField(
-                  decoration: InputDecoration(border: OutlineInputBorder(),
-                    labelText: 'Şifreyi Doğrula',
-                    prefixIcon: Icon(Icons.lock),
-                  ),
-                ),
+                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false),
               ),
               Container(
                 height: 42,
@@ -80,24 +54,10 @@ class PasswordPage extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.all(Radius.circular(20)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withValues(alpha: 0.5),
-                      spreadRadius: 5,
-                      blurRadius: 15,
-                      offset: Offset(0, 3), // changes position of shadow
-                    ),
-                  ],
+                  boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5), spreadRadius: 5,blurRadius: 15, offset: Offset(0, 3),),],
                 ),
                 child: ElevatedButton(
-                    onPressed: (){
-                      //İşlem
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Şifre Değişti'),
-                        ),
-                      );
-                    },
+                    onPressed: (){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Şifre Değişti'),),);},
                     child: Text('Onayla')),
               ),
             ],
