@@ -42,23 +42,18 @@ class RegisterPage extends StatelessWidget {
               ),
               Container(
                 margin: EdgeInsets.only(top: 50, left: 20, right: 20),
-                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false),
+                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false, isPassword: false,),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false),
+                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20,right: 20),
-                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false),
+                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true,),
               ),
               Container(
-                height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 90),
-                /*
-                  decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
-                child: ElevatedButton(
-                    onPressed: (){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Şifre Değişti'),),);},
-                    child: Text('Onayla')), */
+                height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 50),
                 child:  CustomButton(destination: LoginPage(), text: "Onayla"),
               ),
             ],

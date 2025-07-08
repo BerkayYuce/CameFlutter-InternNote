@@ -15,13 +15,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Login Page',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const LoginPage(),
+      home:  LoginPage(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 class LoginPage extends StatelessWidget {
-  const LoginPage({super.key});
+  LoginPage({super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -42,22 +43,22 @@ class LoginPage extends StatelessWidget {
                 // İkon
                 Container(
                   margin:  EdgeInsets.only(bottom: 20),
-                  decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5, blurRadius: 15,offset: Offset(0, 3),),],),
+                  decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),
+                    boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5, blurRadius: 15,offset: Offset(0, 3),),],),
                   child:  Icon(Icons.person,size: 150,color: Colors.blue,),
                 ),
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
-                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true),
+                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true, isPassword: false,),
                 ),
                 // Şifre
-                  Expanded(
-                    child: Container(
-                        child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false)
-                    ),
-                  ),
                 Container(
-                  margin: EdgeInsets.only(bottom: 250), alignment: Alignment.bottomRight,
+                        child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,)
+                ),
+
+                Container(
+                  margin: EdgeInsets.only(bottom: 200,top: 15), alignment: Alignment.bottomRight,
                   child: GestureDetector(
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PasswordPage(),));},
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
