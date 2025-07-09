@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatefulWidget {
 
-  //final String page;
+  //Function(String,bool) snackText2;
   final Widget destination;
   final String text;
-
+  final String snackText;
   CustomButton({
     super.key,
     required this.destination,
     required this.text,
+    required this.snackText,
+    //required this.snackText2,
   });
 
   @override
@@ -17,6 +19,17 @@ class CustomButton extends StatefulWidget {
 }
 
 class _CustomButtonState extends State<CustomButton> {
+/*
+  final _text = TextEditingController();
+  bool _validate = false;
+
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  }
+*/
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +38,20 @@ class _CustomButtonState extends State<CustomButton> {
         boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
 
       child: ElevatedButton(
-        onPressed:(){Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);},
+        onPressed:(){
+          /*setState(() {_text.text.isEmpty ? _validate = true : _validate = false;}); */
+          Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
+          final snackBar = SnackBar(
+            content: Text(widget.snackText),
+            action: SnackBarAction(
+              label: 'İptal',
+              onPressed: () {
+                // Some code to undo the change.
+              },
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+        },
         child: Text(widget.text),
       ),
     );

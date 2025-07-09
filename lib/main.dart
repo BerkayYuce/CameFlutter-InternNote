@@ -50,11 +50,11 @@ class LoginPage extends StatelessWidget {
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
-                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true, isPassword: false,),
+                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true, isPassword: false,hint: "example@gmail.com",),
                 ),
                 // Şifre
                 Container(
-                        child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,)
+                        child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,hint: "",)
                 ),
 
                 Container(
@@ -68,12 +68,12 @@ class LoginPage extends StatelessWidget {
                 Row(
                   children: [
                     Container(
-                      width: 105,height: 40,margin: EdgeInsets.only(left: 25),alignment: Alignment.bottomLeft,
-                      child: CustomButton(destination: home_page(), text: "Giriş yap"),
+                      width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
+                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "",),
                     ),
                     Container(
-                        width: 96,height: 40,margin: EdgeInsets.only(left: 60),alignment: Alignment.bottomRight,
-                         child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol'),
+                        width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
+                         child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "",),
                     )
                   ],
                 ),

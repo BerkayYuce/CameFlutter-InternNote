@@ -42,19 +42,19 @@ class RegisterPage extends StatelessWidget {
               ),
               Container(
                 margin: EdgeInsets.only(top: 50, left: 20, right: 20),
-                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false, isPassword: false,),
+                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false, isPassword: false,hint: "example@gmail.com",),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,),
+                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,hint: "",),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20,right: 20),
-                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true,),
+                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true, hint: "",),
               ),
               Container(
-                height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 50),
-                child:  CustomButton(destination: LoginPage(), text: "Onayla"),
+                height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
+                child:  CustomButton(destination: LoginPage(), text: "Onayla",snackText: "",),
               ),
             ],
           ),

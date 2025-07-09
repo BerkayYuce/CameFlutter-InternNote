@@ -7,6 +7,7 @@ class CustomTextField extends StatefulWidget {
   final bool autofocus;
   bool passwordVisible=false;
   final bool isPassword;
+  String hint;
   CustomTextField({
      super.key,
      required this.icon,
@@ -14,6 +15,7 @@ class CustomTextField extends StatefulWidget {
      required this.label,
      required this.autofocus,
     required this.isPassword,
+    required this.hint,
   });
 
   @override
@@ -27,8 +29,17 @@ class _CustomTextFieldState extends State<CustomTextField> {
   @override
   void initState(){
     super.initState();
-    widget.passwordVisible=true;
+    widget.passwordVisible=false;
   }
+  /*
+  final _text = TextEditingController();
+  final bool _validate = false;
+
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  } */
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +50,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       decoration: InputDecoration(border: OutlineInputBorder(),
+        //errorText: _validate ? 'Value Cant Be Empty' : null,
+          hint: Text(widget.hint),
         labelText: widget.label,
         prefixIcon: Icon(widget.icon),
         suffixIcon: widget.isPassword

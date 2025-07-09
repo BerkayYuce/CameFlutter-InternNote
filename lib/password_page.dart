@@ -31,8 +31,8 @@ class PasswordPage extends StatelessWidget {
       ),
       body: SafeArea(child: Center(
         child: Container(
-          padding: EdgeInsets.all(20),
-          margin:  EdgeInsets.all(20),
+          padding: EdgeInsets.only(top:110,bottom: 110),
+          margin:  EdgeInsets.all(0),
           color: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -43,16 +43,13 @@ class PasswordPage extends StatelessWidget {
                 decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
                 child:  Icon(Icons.person, size: 150, color: Colors.blue,),),
               Container(
-                margin: EdgeInsets.only(top: 100, left: 20, right: 20),
-                child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,),
+                margin: EdgeInsets.only(top: 80, left: 30, right: 30),
+                child: CustomTextField(icon: Icons.mail, label: "Email", autofocus: false, isPassword: false,hint: "example@gmail.com",),
               ),
               Container(
-                margin: EdgeInsets.only(top: 20, left: 20,right: 20),
-                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true,),
-              ),
-              Container(
-                height: 42,width: 95, margin: EdgeInsets.symmetric(horizontal: 100,vertical: 60),
-                child:  CustomButton(destination: LoginPage(), text: "Onayla"),
+                height: 42,width: 95, margin: EdgeInsets.symmetric(vertical: 60),
+                child:  CustomButton(destination: LoginPage(), text: "Gönder",snackText: "Kod gönderildi",),
+
               ),
             ],
           ),
