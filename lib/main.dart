@@ -69,11 +69,11 @@ class LoginPage extends StatelessWidget {
                   children: [
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
-                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "",),
+                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", isSnack: false,),
                     ),
                     Container(
                         width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
-                         child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "",),
+                         child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "", isSnack: false,),
                     )
                   ],
                 ),

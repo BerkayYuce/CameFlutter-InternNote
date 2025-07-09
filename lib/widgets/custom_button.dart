@@ -6,12 +6,15 @@ class CustomButton extends StatefulWidget {
   final Widget destination;
   final String text;
   final String snackText;
+  bool isSnack;
   CustomButton({
     super.key,
     required this.destination,
     required this.text,
     required this.snackText,
+    required this.isSnack,
     //required this.snackText2,
+
   });
 
   @override
@@ -50,7 +53,9 @@ class _CustomButtonState extends State<CustomButton> {
               },
             ),
           );
-          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          widget.isSnack
+              ? ScaffoldMessenger.of(context).showSnackBar(snackBar)
+            : null;
         },
         child: Text(widget.text),
       ),

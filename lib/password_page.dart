@@ -48,7 +48,7 @@ class PasswordPage extends StatelessWidget {
               ),
               Container(
                 height: 42,width: 95, margin: EdgeInsets.symmetric(vertical: 60),
-                child:  CustomButton(destination: LoginPage(), text: "Gönder",snackText: "Kod gönderildi",),
+                child:  CustomButton(destination: LoginPage(), text: "Gönder",snackText: "Kod gönderildi",isSnack: true,),
 
               ),
             ],
