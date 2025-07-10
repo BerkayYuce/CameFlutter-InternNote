@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
-import 'package:login_page_flutter/home_page.dart';
-import 'package:login_page_flutter/main.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:login_page_flutter/home_page.dart';
+import 'package:login_page_flutter/main.dart';
+import 'package:login_page_flutter/register_page.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -31,7 +33,7 @@ class PasswordPage extends StatelessWidget {
       ),
       body: SafeArea(child: Center(
         child: Container(
-          padding: EdgeInsets.only(top:110,bottom: 110),
+          padding: EdgeInsets.only(top:110,bottom: 100),
           margin:  EdgeInsets.all(0),
           color: Colors.white,
           child: Column(
@@ -44,13 +46,16 @@ class PasswordPage extends StatelessWidget {
                 child:  Icon(Icons.person, size: 150, color: Colors.blue,),),
               Container(
                 margin: EdgeInsets.only(top: 80, left: 30, right: 30),
-                child: CustomTextField(icon: Icons.mail, label: "Email", autofocus: false, isPassword: false,hint: "example@gmail.com",),
+                child: CustomTextField(icon: Icons.mail, label: "Email", autofocus: false, isPassword: false,hint: "example@gmail.com",callback: (value){},),
               ),
               Container(
                 height: 42,width: 95, margin: EdgeInsets.symmetric(vertical: 60),
-                child:  CustomButton(destination: LoginPage(), text: "Gönder",snackText: "Kod gönderildi",isSnack: true,),
+                child:  CustomButton(destination: PasswordPage(), text: "Gönder",snackText: "Kod gönderildi",isSnack: true,isNavigation: true,onPress: false,callback:(value){
+
+                } ,),
 
               ),
+
             ],
           ),
         ),

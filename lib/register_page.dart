@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/main.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
@@ -30,31 +31,35 @@ class RegisterPage extends StatelessWidget {
       ),
       body: SafeArea(child: Center(
         child: Container(
-          padding: EdgeInsets.all(10),margin:  EdgeInsets.all(15),color: Colors.white,
+          padding: EdgeInsets.all(10),margin:  EdgeInsets.all(0),color: Colors.white,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               // İkon
               Container(
-                margin:  EdgeInsets.only(bottom: 20),
+                margin:  EdgeInsets.only(bottom: 10),
                 decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
                 child:  Icon(Icons.person_add,size: 150,color: Colors.blue,),
               ),
               Container(
                 margin: EdgeInsets.only(top: 50, left: 20, right: 20),
-                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false, isPassword: false,hint: "example@gmail.com",),
+                child: CustomTextField(icon: Icons.person_add, label: "Kullanıcı Adı", autofocus: false, isPassword: false,hint: "example@gmail.com",callback: (value){}, ),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20, right: 20),
-                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,hint: "",),
+                child:  CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,hint: "",callback: (value){},),
               ),
               Container(
                 margin: EdgeInsets.only(top: 20, left: 20,right: 20),
-                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true, hint: "",),
+                child: CustomTextField(icon: Icons.lock, label: "Şifreyi Doğrula", autofocus: false, isPassword: true, hint: "",callback: (value){
+
+                },),
               ),
               Container(
                 height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
-                child:  CustomButton(destination: LoginPage(), text: "Onayla",snackText: "",isSnack: false,),
+                child:  CustomButton(destination: LoginPage(), text: "Onayla",snackText: "",isSnack: false,isNavigation: true,onPress: false,callback:(value){
+
+                },),
               ),
             ],
           ),

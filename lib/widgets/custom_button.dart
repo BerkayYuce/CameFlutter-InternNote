@@ -1,20 +1,26 @@
 import 'package:flutter/material.dart';
+import 'custom_text_field.dart';
 
 class CustomButton extends StatefulWidget {
 
-  //Function(String,bool) snackText2;
   final Widget destination;
+  bool isNavigation;
   final String text;
   final String snackText;
   bool isSnack;
+  //bool isButtonPressed = false;
+  Function(String) callback;
+  bool onPress;
+
   CustomButton({
     super.key,
     required this.destination,
     required this.text,
     required this.snackText,
     required this.isSnack,
-    //required this.snackText2,
-
+    required this.isNavigation,
+    required this.callback,
+    required this.onPress,
   });
 
   @override
@@ -22,16 +28,6 @@ class CustomButton extends StatefulWidget {
 }
 
 class _CustomButtonState extends State<CustomButton> {
-/*
-  final _text = TextEditingController();
-  bool _validate = false;
-
-  @override
-  void dispose() {
-    _text.dispose();
-    super.dispose();
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +37,16 @@ class _CustomButtonState extends State<CustomButton> {
         boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
 
       child: ElevatedButton(
-        onPressed:(){
-          /*setState(() {_text.text.isEmpty ? _validate = true : _validate = false;}); */
-          Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
+        onPressed:widget.onPress?(){
+          //widget.isButtonPressed = true;
+          if(widget.isNavigation )
+          {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
+          }
+          else
+          {
+              widget.callback("ok");
+          }
           final snackBar = SnackBar(
             content: Text(widget.snackText),
             action: SnackBarAction(
@@ -56,7 +59,7 @@ class _CustomButtonState extends State<CustomButton> {
           widget.isSnack
               ? ScaffoldMessenger.of(context).showSnackBar(snackBar)
             : null;
-        },
+        } :null ,
         child: Text(widget.text),
       ),
     );
