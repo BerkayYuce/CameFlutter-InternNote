@@ -7,7 +7,7 @@ class CustomButton extends StatefulWidget {
   bool isNavigation;
   final String text;
   final String snackText;
-  bool isSnack;
+  bool snack;
   //bool isButtonPressed = false;
   Function(String) callback;
   bool onPress;
@@ -17,7 +17,7 @@ class CustomButton extends StatefulWidget {
     required this.destination,
     required this.text,
     required this.snackText,
-    required this.isSnack,
+    required this.snack,
     required this.isNavigation,
     required this.callback,
     required this.onPress,
@@ -38,14 +38,14 @@ class _CustomButtonState extends State<CustomButton> {
 
       child: ElevatedButton(
         onPressed:widget.onPress?(){
-          //widget.isButtonPressed = true;
           if(widget.isNavigation )
           {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
+              widget.callback("ok");
+              //Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
           }
           else
           {
-              widget.callback("ok");
+              //widget.callback("ok");
           }
           final snackBar = SnackBar(
             content: Text(widget.snackText),
@@ -56,7 +56,7 @@ class _CustomButtonState extends State<CustomButton> {
               },
             ),
           );
-          widget.isSnack
+          widget.snack
               ? ScaffoldMessenger.of(context).showSnackBar(snackBar)
             : null;
         } :null ,

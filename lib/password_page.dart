@@ -50,7 +50,7 @@ class PasswordPage extends StatelessWidget {
               ),
               Container(
                 height: 42,width: 95, margin: EdgeInsets.symmetric(vertical: 60),
-                child:  CustomButton(destination: PasswordPage(), text: "Gönder",snackText: "Kod gönderildi",isSnack: true,isNavigation: true,onPress: false,callback:(value){
+                child:  CustomButton(destination: PasswordPage(), text: "Gönder",snackText: "Kod gönderildi",snack: true,isNavigation: true,onPress: false,callback:(value){
 
                 } ,),
 

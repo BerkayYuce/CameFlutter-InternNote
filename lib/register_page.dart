@@ -57,7 +57,7 @@ class RegisterPage extends StatelessWidget {
               ),
               Container(
                 height: 42, width: 95,margin: EdgeInsets.symmetric(horizontal: 100,vertical: 80),
-                child:  CustomButton(destination: LoginPage(), text: "Onayla",snackText: "",isSnack: false,isNavigation: true,onPress: false,callback:(value){
+                child:  CustomButton(destination: LoginPage(), text: "Onayla",snackText: "",snack: false,isNavigation: true,onPress: false,callback:(value){
 
                 },),
               ),

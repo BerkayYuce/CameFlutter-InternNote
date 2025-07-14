@@ -18,10 +18,12 @@ class FormController{
       } else if(data["type"]=="len"){
         if(value.length < int.parse(data["len"])){
           formValidReturn["status"] = "failed";
-          formValidReturn["message"] = "xxxx";
+          formValidReturn["message"] = "Çok kısa";
           return formValidReturn;
         }
 
+      } else if(data["type"] == "email"){
+        //Email kontrolü @ - .com
       }
     }
 

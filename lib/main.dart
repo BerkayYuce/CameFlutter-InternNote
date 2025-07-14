@@ -92,15 +92,14 @@ class LoginPage extends StatefulWidget {
                 // Giriş Butonu
                 Row(
                   children: [
-
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
-                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", isSnack: false,isNavigation: false,onPress: true,callback: (value){
+                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,callback: (value){
                         if(value =="ok"){
                           FormController formController = FormController();
                           Map<String,dynamic> userValid = {
                             "value": username,
-                            "validator": [
+                            "validators": [
                               {
                                 "type":"empty"
                               },
@@ -115,26 +114,39 @@ class LoginPage extends StatefulWidget {
                           };
                           Map<String,dynamic> userValidReturn = formController.formValid(userValid);
                           if(userValidReturn["status"] == "failed"){
-
+                            print("--------failed------------");
                           }
-
-
 
                           if(userValidReturn["status"] == "ok"){
-                            //nav
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()),);
                           }
 
-                          //password için
-                          /*
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Cant be empty')),
-                      ); */
+                          Map<String,dynamic> passValid = {
+                            "value": password,
+                            "validators": [
+                              {
+                                "type":"empty"
+                              },
+                              {
+                                "type":"len",
+                                "len": 6
+                              },
+                            ]
+                          };
+                          Map<String, dynamic> passValidReturn = formController.formValid(passValid);
+                          if(passValidReturn["status"] == "failed") {
+                            print("----------------failed-----------");
+                          }
+
+                          if(passValidReturn["status"] == "ok"){
+                            print("---------------okey-----------");
+                          }
                         }
                       },),
                     ),
                     Container(
                       width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
-                      child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "", isSnack: false, isNavigation: true,onPress: true,callback: (value){
+                      child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "", snack: false, isNavigation: true,onPress: true,callback: (value){
                         if (value == "ok"){
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Processing Data')),
