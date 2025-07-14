@@ -38,6 +38,16 @@ class _CustomButtonState extends State<CustomButton> {
 
       child: ElevatedButton(
         onPressed:widget.onPress?(){
+          widget.callback("ok"); // her durumda çalışır
+
+          if(widget.isNavigation) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => widget.destination),
+            );
+          }
+
+          /*
           if(widget.isNavigation )
           {
               widget.callback("ok");
@@ -46,7 +56,8 @@ class _CustomButtonState extends State<CustomButton> {
           else
           {
               //widget.callback("ok");
-          }
+          } */
+
           final snackBar = SnackBar(
             content: Text(widget.snackText),
             action: SnackBarAction(

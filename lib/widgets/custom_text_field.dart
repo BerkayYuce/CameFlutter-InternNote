@@ -2,29 +2,30 @@
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
-  IconData icon ;
+  final IconData icon;
   final String label;
-  Function(String) callback;
+  final String hint;
   final bool autofocus;
-  bool passwordVisible=false;
   final bool isPassword;
-  String hint;
-  final controller = TextEditingController();
-  final text = '';
+  final Function(String) callback;
+  final TextEditingController controller;
+  bool passwordVisible = false;
 
   CustomTextField({
-     super.key,
-     required this.icon,
-     required this.callback,
-     required this.label,
-     required this.autofocus,
-    required this.isPassword,
+    super.key,
+    required this.icon,
+    required this.label,
     required this.hint,
+    required this.autofocus,
+    required this.isPassword,
+    required this.callback,
+    required this.controller,
   });
 
   @override
   State<CustomTextField> createState() => _CustomTextFieldState();
 }
+
 
 class _CustomTextFieldState extends State<CustomTextField> {
 
@@ -72,7 +73,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             : null
       ),
 
-      onChanged: (text) => widget.callback(widget.controller.text),
+      onChanged: (text) => widget.callback(text),
     );
 
   }

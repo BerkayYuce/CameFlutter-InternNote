@@ -21,9 +21,9 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 class LoginPage extends StatefulWidget {
   LoginPage({super.key});
-  //final _formKey = GlobalKey<FormState>();
 
 
   @override
@@ -32,9 +32,17 @@ class LoginPage extends StatefulWidget {
 
 // Yeni State sınıfımız
   class _LoginPageState extends State<LoginPage> {
-    bool onPress=false;
-    String username="";
-    String password="";
+    final TextEditingController usernameController = TextEditingController();
+    final TextEditingController passwordController = TextEditingController();
+    bool onPress = false;
+    String username = "";
+    String password = "";
+
+    void showError(String message) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)));
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -64,28 +72,43 @@ class LoginPage extends StatefulWidget {
                 // Kullanıcı Adı
                 Container(
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
-                  child: CustomTextField(icon: Icons.person, label: "Kullanıcı Adı", autofocus: true, isPassword: false,
+                  child: CustomTextField(
+
+                    icon: Icons.person,
+                    label: "Kullanıcı Adı",
+                    autofocus: true,
+                    isPassword: false,
                     hint: "example@gmail.com",
+                    controller: usernameController,
                     callback: (value){
-                    print("Value: $value");
+                    print("Kullanıcı: $value");
                     setState(() {
                       username = value;
 
-                    });
+                    }
+                    );
                   },),
                 ),
                 // Şifre
                 Container(
-                    child: CustomTextField(icon: Icons.lock, label: "Şifre", autofocus: false, isPassword: true,hint: "",callback: (value){
+                    child: CustomTextField(
+                      icon: Icons.lock,
+                      label: "Şifre",
+                      autofocus: false,
+                      isPassword: true,
+                      hint: "",
+                      controller: passwordController,
+                      callback: (value){
                       setState(() {
                         password = value;
-                      });
+                      }
+                      );
                     },)
                 ),
                 Container(
                   margin: EdgeInsets.only(bottom: 180,top: 15), alignment: Alignment.bottomRight,
                   child: GestureDetector(
-                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => const PasswordPage(),));},
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => PasswordPage(),));},
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
                   ),
                 ),
@@ -94,7 +117,8 @@ class LoginPage extends StatefulWidget {
                   children: [
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
-                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,callback: (value){
+                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
+                        /* callback: (value){
                         if(value =="ok"){
                           FormController formController = FormController();
                           Map<String,dynamic> userValid = {
@@ -113,12 +137,13 @@ class LoginPage extends StatefulWidget {
                             ]
                           };
                           Map<String,dynamic> userValidReturn = formController.formValid(userValid);
-                          if(userValidReturn["status"] == "failed"){
-                            print("--------failed------------");
+                          if(userValidReturn["status"] != "ok"){
+                            showError(userValidReturn["message"]);
+                            return; //Devam etmesin
                           }
 
                           if(userValidReturn["status"] == "ok"){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()),);
+
                           }
 
                           Map<String,dynamic> passValid = {
@@ -135,18 +160,82 @@ class LoginPage extends StatefulWidget {
                           };
                           Map<String, dynamic> passValidReturn = formController.formValid(passValid);
                           if(passValidReturn["status"] == "failed") {
-                            print("----------------failed-----------");
+                            showError(passValidReturn["message"]);
+                            return;
                           }
 
                           if(passValidReturn["status"] == "ok"){
-                            print("---------------okey-----------");
+
+                            return;
+                          }
+
+                          if(userValidReturn["status"] == "ok" && passValidReturn["status"] == "ok"){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()),);
                           }
                         }
-                      },),
+                      }, */
+                          callback: (value) {
+                            if (value == "ok") {
+                              FormController formController = FormController();
+
+                              Map<String, dynamic> userValid = {
+                                "value": username,
+                                "validators": [
+                                  {
+                                    "type": "empty"
+                                  },
+                                  {
+                                    "type": "len",
+                                    "len": 6
+                                  },
+                                  {
+                                    "type": "email"
+                                  },
+                                ]
+                              };
+
+                              Map<String, dynamic> userValidReturn = formController.formValid(userValid);
+                              if (userValidReturn["status"] != "ok") {
+                                showError(userValidReturn["message"]);
+                                return;
+                              }
+
+                              Map<String, dynamic> passValid = {
+                                "value": password,
+                                "validators": [
+                                  {
+                                    "type": "empty"
+                                  },
+                                  {
+                                    "type": "len",
+                                    "len": 6
+                                  },
+                                ]
+                              };
+
+                              Map<String, dynamic> passValidReturn = formController.formValid(passValid);
+                              if (passValidReturn["status"] != "ok") {
+                                showError(passValidReturn["message"]);
+                                return;
+                              }
+
+                              // Tüm validasyonlar başarılıysa sayfayı değiştir
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
+                            }
+                          },
+
+                      ),
                     ),
                     Container(
                       width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
-                      child: CustomButton(destination: RegisterPage(), text: 'Kayıt ol',snackText: "", snack: false, isNavigation: true,onPress: true,callback: (value){
+                      child: CustomButton(
+                        destination: RegisterPage(),
+                        text: 'Kayıt ol',
+                        snackText: "",
+                        snack: false,
+                        isNavigation: true,
+                        onPress: true,
+                        callback: (value){
                         if (value == "ok"){
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(content: Text('Processing Data')),
