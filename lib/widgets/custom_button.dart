@@ -3,7 +3,7 @@ import 'custom_text_field.dart';
 
 class CustomButton extends StatefulWidget {
 
-  final Widget destination;
+  //final Widget destination;
   bool isNavigation;
   final String text;
   final String snackText;
@@ -14,7 +14,7 @@ class CustomButton extends StatefulWidget {
 
   CustomButton({
     super.key,
-    required this.destination,
+    //required this.destination,
     required this.text,
     required this.snackText,
     required this.snack,
@@ -40,22 +40,12 @@ class _CustomButtonState extends State<CustomButton> {
         onPressed:widget.onPress?(){
           widget.callback("ok"); // her durumda çalışır
 
+          /*
           if(widget.isNavigation) {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => widget.destination),
             );
-          }
-
-          /*
-          if(widget.isNavigation )
-          {
-              widget.callback("ok");
-              //Navigator.push(context, MaterialPageRoute(builder: (context) => widget.destination),);
-          }
-          else
-          {
-              //widget.callback("ok");
           } */
 
           final snackBar = SnackBar(

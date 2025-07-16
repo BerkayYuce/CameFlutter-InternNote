@@ -5,6 +5,7 @@ import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:dio/dio.dart';
 
 void main() => runApp(const MyApp());
 
@@ -42,7 +43,6 @@ class LoginPage extends StatefulWidget {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)));
     }
-
 
   @override
   Widget build(BuildContext context) {
@@ -117,63 +117,7 @@ class LoginPage extends StatefulWidget {
                   children: [
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
-                      child: CustomButton(destination: home_page(), text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
-                        /* callback: (value){
-                        if(value =="ok"){
-                          FormController formController = FormController();
-                          Map<String,dynamic> userValid = {
-                            "value": username,
-                            "validators": [
-                              {
-                                "type":"empty"
-                              },
-                              {
-                                "type":"len",
-                                "len": 6
-                              },
-                              {
-                                "type":"email",
-                              }
-                            ]
-                          };
-                          Map<String,dynamic> userValidReturn = formController.formValid(userValid);
-                          if(userValidReturn["status"] != "ok"){
-                            showError(userValidReturn["message"]);
-                            return; //Devam etmesin
-                          }
-
-                          if(userValidReturn["status"] == "ok"){
-
-                          }
-
-                          Map<String,dynamic> passValid = {
-                            "value": password,
-                            "validators": [
-                              {
-                                "type":"empty"
-                              },
-                              {
-                                "type":"len",
-                                "len": 6
-                              },
-                            ]
-                          };
-                          Map<String, dynamic> passValidReturn = formController.formValid(passValid);
-                          if(passValidReturn["status"] == "failed") {
-                            showError(passValidReturn["message"]);
-                            return;
-                          }
-
-                          if(passValidReturn["status"] == "ok"){
-
-                            return;
-                          }
-
-                          if(userValidReturn["status"] == "ok" && passValidReturn["status"] == "ok"){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()),);
-                          }
-                        }
-                      }, */
+                      child: CustomButton(text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
                           callback: (value) {
                             if (value == "ok") {
                               FormController formController = FormController();
@@ -229,7 +173,6 @@ class LoginPage extends StatefulWidget {
                     Container(
                       width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
                       child: CustomButton(
-                        destination: RegisterPage(),
                         text: 'Kayıt ol',
                         snackText: "",
                         snack: false,
@@ -237,9 +180,7 @@ class LoginPage extends StatefulWidget {
                         onPress: true,
                         callback: (value){
                         if (value == "ok"){
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Processing Data')),
-                          );
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
                         }
                       },),
                     ),
@@ -257,3 +198,5 @@ class LoginPage extends StatefulWidget {
 
   }
 }
+
+

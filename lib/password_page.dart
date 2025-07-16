@@ -74,7 +74,7 @@ class _PasswordPageState extends State<PasswordPage> {
                   width: 95,
                   margin: EdgeInsets.symmetric(vertical: 60),
                   child: CustomButton(
-                    destination: PasswordPage(),
+                    //destination: PasswordPage(),
                     text: "Gönder",
                     snackText: "Kod gönderildi",
                     snack: true,
