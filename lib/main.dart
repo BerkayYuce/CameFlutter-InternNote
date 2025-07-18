@@ -39,6 +39,14 @@ class LoginPage extends StatefulWidget {
     String username = "";
     String password = "";
 
+    final Dio _dio = Dio(
+      BaseOptions(
+        //baseUrl: 'http://cameLaravel.test/api',
+        connectTimeout: const Duration(seconds: 5), // Bağlantı zaman aşımı
+        receiveTimeout: const Duration(seconds: 3), // Veri alma zaman aşımı
+      ),
+    );
+
     void showError(String message) {
       ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)));
@@ -118,7 +126,7 @@ class LoginPage extends StatefulWidget {
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
                       child: CustomButton(text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
-                          callback: (value) {
+                          callback: (value) async {
                             if (value == "ok") {
                               FormController formController = FormController();
 
@@ -163,8 +171,45 @@ class LoginPage extends StatefulWidget {
                                 return;
                               }
 
+                              try {
+                                final response = await Dio().post(
+                                  'http://192.168.14.143:8000/api/login',
+                                  data: {
+                                    'username': username,
+                                    'password': password,
+                                    "device_name": "flutter_app"
+                                  },
+                                );
+
+                                // API'den başarılı bir yanıt geldiyse
+                                if (response.statusCode == 200 || response.statusCode == 201) {
+                                  showError("Giriş başarılı!");
+
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
+                                } else {
+
+                                  showError("Giriş başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
+                                }
+                              } on DioException catch (e) {
+                                // Dio'dan gelen spesifik hataları yakala
+                                if (e.response != null) {
+                                  // Sunucudan hata yanıtı geldiyse
+                                  //showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
+
+                                } else {
+                                  // Ağ bağlantısı sorunları, zaman aşımı vb. hatalar
+                                  showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
+                                }
+                                print("Dio Hatası: $e"); // Hata detaylarını konsola yazdır
+                              } catch (e) {
+                                // Diğer genel hataları yakala
+                                showError("Beklenmedik bir hata oluştu: ${e.toString()}");
+                                print("Genel Hata: $e"); // Hata detaylarını konsola yazdır
+                              }
+
+
                               // Tüm validasyonlar başarılıysa sayfayı değiştir
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
                             }
                           },
 

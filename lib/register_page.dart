@@ -3,6 +3,7 @@ import 'package:login_page_flutter/main.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,7 +20,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: 'http://cameLaravel.test/api',
       connectTimeout: const Duration(seconds: 5), // Bağlantı zaman aşımı
       receiveTimeout: const Duration(seconds: 3), // Veri alma zaman aşımı
     ),
@@ -166,18 +166,28 @@ class _RegisterPageState extends State<RegisterPage> {
                         }
 
 
-                        
-                        try {
-                          final response = await _dio.post(
-                            '/register',
+
+
+                          final response = await Dio().post(
+                            'http://192.168.14.143:8000/api/register',
+                            //'http://127.0.0.1/camelaravel.test/api/register',
                             data: {
                               'name': name,
-                              'username': username,
+                              'email': username,
                               'password': password,
                               "password_confirmation": password,
                               "device_name": "flutter_app"
                             },
+                            options: Options(
+                              headers: {'Accept': 'application/json'},
+                              followRedirects: true, // Yönlendirmeleri otomatik takip et
+                              validateStatus: (status) {
+                                return status != null && status < 400; // 3xx ve altı geçerli say
+                              },
+                            ),
                           );
+
+                          print(response);
 
                           // API'den başarılı bir yanıt geldiyse
                           if (response.statusCode == 200 || response.statusCode == 201) {
@@ -186,24 +196,11 @@ class _RegisterPageState extends State<RegisterPage> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                           } else {
 
-                            showError("Kayıt başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
+                            //showError("Kayıt başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
+                            showError("Kayıt başarısız oldu: ");
                           }
-                        } on DioException catch (e) {
-                          // Dio'dan gelen spesifik hataları yakala
-                          if (e.response != null) {
-                            // Sunucudan hata yanıtı geldiyse
-                            showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
 
-                          } else {
-                            // Ağ bağlantısı sorunları, zaman aşımı vb. hatalar
-                            showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
-                          }
-                          print("Dio Hatası: $e"); // Hata detaylarını konsola yazdır
-                        } catch (e) {
-                          // Diğer genel hataları yakala
-                          showError("Beklenmedik bir hata oluştu: ${e.toString()}");
-                          print("Genel Hata: $e"); // Hata detaylarını konsola yazdır
-                        }
+
 
                        //Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                         //showError("Kayıt başarılı!");
