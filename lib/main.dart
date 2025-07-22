@@ -7,6 +7,8 @@ import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+
 
 void main() => runApp(const MyApp());
 
@@ -25,45 +27,54 @@ class MyApp extends StatelessWidget {
 }
 
 class LoginPage extends StatefulWidget {
+
   LoginPage({super.key});
 
 
   @override
   State<LoginPage> createState() => _LoginPageState();
-  }
 
-// Yeni State sınıfımız
+}
+
   class _LoginPageState extends State<LoginPage> {
+
     final TextEditingController usernameController = TextEditingController();
     final TextEditingController passwordController = TextEditingController();
+
     bool onPress = false;
     String username = "";
     String password = "";
 
     final Dio _dio = Dio(
+
       BaseOptions(
         //baseUrl: 'http://cameLaravel.test/api',
         connectTimeout: const Duration(seconds: 5), // Bağlantı zaman aşımı
         receiveTimeout: const Duration(seconds: 3), // Veri alma zaman aşımı
       ),
+
     );
 
     void showError(String message) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)));
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         title: const Text('Came Özak'),
         backgroundColor: Colors.blue,
       ),
+
       body: SafeArea(
         child: Center(
           child: Container(
+
             padding: EdgeInsets.all(20),margin:  EdgeInsets.all(9),
             decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(15),),
 
@@ -71,6 +82,7 @@ class LoginPage extends StatefulWidget {
 
               mainAxisSize: MainAxisSize.min,
               children: [
+
                 // İkon
                 Container(
                   margin:  EdgeInsets.only(bottom: 20),
@@ -78,8 +90,10 @@ class LoginPage extends StatefulWidget {
                     boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5, blurRadius: 15,offset: Offset(0, 3),),],),
                   child:  Icon(Icons.person,size: 150,color: Colors.blue,),
                 ),
+
                 // Kullanıcı Adı
                 Container(
+
                   margin:  EdgeInsets.only(bottom: 15,top: 15),
                   child: CustomTextField(
 
@@ -89,17 +103,22 @@ class LoginPage extends StatefulWidget {
                     isPassword: false,
                     hint: "example@gmail.com",
                     controller: usernameController,
-                    callback: (value){
-                    print("Kullanıcı: $value");
-                    setState(() {
-                      username = value;
 
-                    }
+                    callback: (value){
+
+                      setState(() {
+                        username = value;
+
+                      }
+
                     );
-                  },),
+                      },
+                  ),
                 ),
+
                 // Şifre
                 Container(
+
                     child: CustomTextField(
                       icon: Icons.lock,
                       label: "Şifre",
@@ -107,28 +126,37 @@ class LoginPage extends StatefulWidget {
                       isPassword: true,
                       hint: "",
                       controller: passwordController,
+
                       callback: (value){
-                      setState(() {
-                        password = value;
-                      }
-                      );
-                    },)
+
+                        setState(() {
+                          password = value;
+
+                        });
+                    },
+                    )
                 ),
+
                 Container(
                   margin: EdgeInsets.only(bottom: 180,top: 15), alignment: Alignment.bottomRight,
+
                   child: GestureDetector(
                     onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => PasswordPage(),));},
                     child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
                   ),
                 ),
+
                 // Giriş Butonu
                 Row(
                   children: [
                     Container(
                       width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
+
                       child: CustomButton(text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
-                          callback: (value) async {
-                            if (value == "ok") {
+
+                        callback: (value) async {
+
+                          if (value == "ok") {
                               FormController formController = FormController();
 
                               Map<String, dynamic> userValid = {
@@ -182,29 +210,33 @@ class LoginPage extends StatefulWidget {
                                     'password': password,
                                     "device_name": "flutter_app"
                                   },
+                                  options: Options(
+                                    followRedirects: true, // Yönlendirmeleri otomatik takip et
+                                    validateStatus: (status) {
+                                      return status != null && status < 500; // 3xx ve altı geçerli say
+                                    },
+                                  ),
                                 );
 
                                 if (response.statusCode == 200 || response.statusCode == 201) {
                                   showError("Giriş başarılı!");
 
                                   final SharedPreferences prefs = await SharedPreferences.getInstance();
-                                  final String? authToken = response.data['token'];
+                                  final String? authToken = response.data['token']; //Tokeni al
 
                                   if (authToken != null) {
 
-                                    await prefs.setString('authToken', authToken);
-                                    showError("Giriş başarılı!");
+                                    await prefs.setString('authToken', authToken); //Tokenı set et
 
                                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
                                   }
 
-                                  //Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                                 } else {
-
-                                  showError("Giriş başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
+                                  int? error = response.statusCode;
+                                  showError(HttpStatusCodes.getMessage(error!));
                                 }
-                              } on DioException catch (e) {
 
+                              } on DioException catch (e) {
                                 if (e.response != null) {
 
                                   //showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
@@ -224,20 +256,25 @@ class LoginPage extends StatefulWidget {
                           },
 
                       ),
+
                     ),
+
                     Container(
                       width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
+
                       child: CustomButton(
                         text: 'Kayıt ol',
                         snackText: "",
                         snack: false,
                         isNavigation: true,
                         onPress: true,
+
                         callback: (value){
-                        if (value == "ok"){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
-                        }
-                      },),
+                          if (value == "ok"){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
+                          }
+                        },
+                      ),
                     ),
 
                   ],

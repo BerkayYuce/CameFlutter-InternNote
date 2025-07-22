@@ -27,8 +27,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadAndFetchUserName() async {
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    final String? authToken = prefs.getString('authToken');
+    final String? authToken = prefs.getString('authToken');//Tokenı getir
 
     if (authToken != null) {
       try {
@@ -57,6 +56,7 @@ class _HomePageState extends State<HomePage> {
 
             print('API yanıtında isim bulunamadı veya yapı beklendiği gibi değil.');
           }
+
         } else {
 
           print('APIden kullanıcı bilgisi alınamadı: ${response.statusCode}');
@@ -64,7 +64,9 @@ class _HomePageState extends State<HomePage> {
           _logout();
         }
       } on DioException catch (e) {
+
         print('Kullanıcı bilgisi çekilirken Dio Hatası: $e');
+
         if (e.response?.statusCode == 401) {
           _logout();
         }
@@ -74,23 +76,21 @@ class _HomePageState extends State<HomePage> {
     } else {
       _logout();
     }
+
   }
 
   // Çıkış (Logout) fonksiyonu
   Future<void> _logout() async {
+
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('authToken'); // Token'ı sil
     await prefs.remove('userName'); // Kullanıcı adını da sil
 
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => LoginPage()),
-          (Route<dynamic> route) => false,
-    );
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false,);
   }
 
   final List<Map<String, String>> items = List.generate(
-    20,
+        20,
         (index) => {
       'title': 'Öğe ${index + 1}',
       'description': 'Bu, ${index + 1}. öğenin açıklamasıdır. Daha fazla bilgi buraya yazılabilir.',
@@ -99,9 +99,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       body: Column(
+
         children: [
+
           // HEADER
           Container(
             width: double.infinity,
@@ -113,8 +117,10 @@ class _HomePageState extends State<HomePage> {
                 bottomRight: Radius.circular(30),
               ),
             ),
+
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
                 Align(
                   alignment: Alignment.topRight,
@@ -124,10 +130,12 @@ class _HomePageState extends State<HomePage> {
                     tooltip: 'Çıkış Yap',
                   ),
                 ),
+
                 Text(
                   'Hoş geldin, $_userName!', // Kullanıcı adını gösterecek
                   style: const TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
+
                 const SizedBox(height: 8),
                 const Text(
                   'Görevlerin aşağıda listelendi.',
@@ -136,12 +144,15 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(20),
               itemCount: items.length,
+
               itemBuilder: (context, index) {
                 final item = items[index];
+
                 return Card(
                   margin: const EdgeInsets.only(bottom: 10),
                   elevation: 5,
@@ -149,7 +160,9 @@ class _HomePageState extends State<HomePage> {
                     leading: const Icon(Icons.task),
                     title: Text(item['title']!),
                     trailing: const Icon(Icons.expand_more),
+
                     children: [
+
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Text(

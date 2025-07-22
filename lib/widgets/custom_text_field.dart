@@ -34,6 +34,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
     super.initState();
     widget.passwordVisible=false;
   }
+
   @override
   void dispose() {
     widget.controller.dispose();
@@ -57,16 +58,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
         labelText: widget.label,
         prefixIcon: Icon(widget.icon),
 
-          suffixIcon: widget.isPassword
-            ? IconButton(
-          icon: Icon(widget.passwordVisible
+          suffixIcon: widget.isPassword ? IconButton(
+            icon: Icon(widget.passwordVisible
               ? Icons.visibility
               : Icons.visibility_off),
+
           onPressed: () {
-            setState(
-                  () {
+              setState(() {
                 widget.passwordVisible = !(widget.passwordVisible);
               },
+
             );
           },
         )

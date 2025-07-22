@@ -3,18 +3,15 @@ import 'custom_text_field.dart';
 
 class CustomButton extends StatefulWidget {
 
-  //final Widget destination;
   bool isNavigation;
   final String text;
   final String snackText;
   bool snack;
-  //bool isButtonPressed = false;
-  Function(String) callback;
   bool onPress;
+  Function(String) callback;
 
   CustomButton({
     super.key,
-    //required this.destination,
     required this.text,
     required this.snackText,
     required this.snack,
@@ -25,6 +22,7 @@ class CustomButton extends StatefulWidget {
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
+
 }
 
 class _CustomButtonState extends State<CustomButton> {
@@ -37,29 +35,27 @@ class _CustomButtonState extends State<CustomButton> {
         boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
 
       child: ElevatedButton(
-        onPressed:widget.onPress?(){
-          widget.callback("ok"); // her durumda çalışır
-
-          /*
-          if(widget.isNavigation) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => widget.destination),
-            );
-          } */
+        onPressed: widget.onPress ? ()
+        {
+          widget.callback("ok");
 
           final snackBar = SnackBar(
+
             content: Text(widget.snackText),
+
             action: SnackBarAction(
               label: 'İptal',
               onPressed: () {
-                // Some code to undo the change.
+                //iptal işlemleri
               },
             ),
+
           );
+
           widget.snack
               ? ScaffoldMessenger.of(context).showSnackBar(snackBar)
-            : null;
+              : null;
+
         } :null ,
         child: Text(widget.text),
       ),

@@ -3,7 +3,6 @@ import 'package:login_page_flutter/main.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -14,6 +13,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -43,39 +43,30 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
 
-  void doUserRegistration() async {
-    final username = nameController.text.trim();
-    final email = usernameController.text.trim();
-    final password = passwordController.text.trim();
-
-    final user = ParseUser.createUser(username, password, email);
-
-    var response = await user.signUp();
-
-    if (response.success) {
-      showError(
-          'User was successfully created! Please verify your email before Login');
-    }
-  }
-
-
-
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         title: const Text('Came Özak'),
         backgroundColor: Colors.blue,
       ),
+
       body: SafeArea(
+
         child: Center(
+
           child: Container(
             padding: const EdgeInsets.all(10),
             color: Colors.white,
+
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+
                 // İkon
                 Container(
                   margin: const EdgeInsets.only(bottom: 10),
@@ -91,8 +82,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                     ],
                   ),
+
                   child: const Icon(Icons.person_add, size: 150, color: Colors.blue),
                 ),
+
+
                 Container(
                   margin: const EdgeInsets.only(top: 50, left: 20, right: 20),
                   child: CustomTextField(
@@ -105,6 +99,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     callback: (value) {},
                   ),
                 ),
+
+
                 // Kullanıcı Adı
                 Container(
                   margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -118,6 +114,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     callback: (value) {},
                   ),
                 ),
+
+
                 // Şifre
                 Container(
                   margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -131,6 +129,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     callback: (value) {},
                   ),
                 ),
+
+
                 // Şifre Doğrulama
                 Container(
                   margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
@@ -144,6 +144,8 @@ class _RegisterPageState extends State<RegisterPage> {
                     callback: (value) {},
                   ),
                 ),
+
+
                 // Onayla Butonu
                 Container(
                   height: 42,
@@ -183,7 +185,6 @@ class _RegisterPageState extends State<RegisterPage> {
                           showError("Şifreler eşleşmiyor");
                           return;
                         }
-                        //emailValidatorFlutter.validateEmail(email1);
 
 
                           final response = await Dio().post(
@@ -204,7 +205,6 @@ class _RegisterPageState extends State<RegisterPage> {
                               },
                             ),
                           );
-
                           print(response);
 
                           // API'den başarılı bir yanıt geldiyse

@@ -2,8 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
-import 'package:login_page_flutter/register_page.dart';
-import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class PasswordPage extends StatefulWidget {
   PasswordPage({super.key});
@@ -29,6 +27,7 @@ class _PasswordPageState extends State<PasswordPage> {
 
 
   Future<void> sendResetLink(String email) async {
+
     final dio = Dio();
     final url = 'http://192.168.14.143:8000/api/forgot-password';
     final data = {'email': email};
@@ -46,24 +45,35 @@ class _PasswordPageState extends State<PasswordPage> {
     } catch (e) {
       showError('Bir hata oluştu, lütfen tekrar deneyin. ${e.toString()}');
     }
+
   }
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         title: const Text('Came Özak'),
         backgroundColor: Colors.blue,
       ),
+
       body: SafeArea(
+
         child: Center(
+
           child: Container(
             padding: EdgeInsets.only(top: 110, bottom: 100),
             margin: EdgeInsets.all(0),
             color: Colors.white,
+
             child: Column(
               mainAxisSize: MainAxisSize.min,
+
               children: [
+
                 // İkon
                 Container(
                   margin: EdgeInsets.only(bottom: 20),
@@ -81,6 +91,7 @@ class _PasswordPageState extends State<PasswordPage> {
                   ),
                   child: Icon(Icons.person, size: 150, color: Colors.blue),
                 ),
+
                 // TextField
                 Container(
                   margin: EdgeInsets.only(top: 80, left: 30, right: 30),
@@ -91,23 +102,31 @@ class _PasswordPageState extends State<PasswordPage> {
                     isPassword: false,
                     hint: "example@gmail.com",
                     controller: emailController,
+
                     callback: (value) {
+
+
+
                     },
                   ),
                 ),
+
+
                 // Buton
                 Container(
                   height: 42,
                   width: 95,
                   margin: EdgeInsets.symmetric(vertical: 60),
+
                   child: CustomButton(
-                    //destination: PasswordPage(),
                     text: "Gönder",
                     snackText: "Kod gönderildi",
                     snack: true,
                     isNavigation: true,
                     onPress: true,
+
                     callback: (value) async {
+
                       if (value == "ok") {
 
                         final email = emailController.text.trim();
