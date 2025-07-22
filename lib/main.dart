@@ -6,6 +6,7 @@ import 'package:login_page_flutter/register_page.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() => runApp(const MyApp());
 
@@ -173,43 +174,52 @@ class LoginPage extends StatefulWidget {
 
                               try {
                                 final response = await Dio().post(
+
                                   'http://192.168.14.143:8000/api/login',
+
                                   data: {
-                                    'username': username,
+                                    'email': username,
                                     'password': password,
                                     "device_name": "flutter_app"
                                   },
                                 );
 
-                                // API'den başarılı bir yanıt geldiyse
                                 if (response.statusCode == 200 || response.statusCode == 201) {
                                   showError("Giriş başarılı!");
 
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
+                                  final SharedPreferences prefs = await SharedPreferences.getInstance();
+                                  final String? authToken = response.data['token'];
+
+                                  if (authToken != null) {
+
+                                    await prefs.setString('authToken', authToken);
+                                    showError("Giriş başarılı!");
+
+                                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                                  }
+
+                                  //Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage()));
                                 } else {
 
                                   showError("Giriş başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
                                 }
                               } on DioException catch (e) {
-                                // Dio'dan gelen spesifik hataları yakala
+
                                 if (e.response != null) {
-                                  // Sunucudan hata yanıtı geldiyse
+
                                   //showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
 
                                 } else {
-                                  // Ağ bağlantısı sorunları, zaman aşımı vb. hatalar
+
                                   showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
                                 }
-                                print("Dio Hatası: $e"); // Hata detaylarını konsola yazdır
+                                print("Dio Hatası: $e");
                               } catch (e) {
-                                // Diğer genel hataları yakala
+
                                 showError("Beklenmedik bir hata oluştu: ${e.toString()}");
-                                print("Genel Hata: $e"); // Hata detaylarını konsola yazdır
+                                print("Genel Hata: $e");
                               }
 
-
-                              // Tüm validasyonlar başarılıysa sayfayı değiştir
-                              //Navigator.push(context, MaterialPageRoute(builder: (context) => home_page()));
                             }
                           },
 

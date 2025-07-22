@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:login_page_flutter/register_page.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class PasswordPage extends StatefulWidget {
   PasswordPage({super.key});
@@ -11,14 +13,40 @@ class PasswordPage extends StatefulWidget {
 }
 
 class _PasswordPageState extends State<PasswordPage> {
-  final TextEditingController passwordController = TextEditingController();
+
+  final TextEditingController emailController = TextEditingController();
 
   @override
   void dispose() {
-    passwordController.dispose();
+    emailController.dispose();
     super.dispose();
   }
 
+  void showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(message)));
+  }
+
+
+  Future<void> sendResetLink(String email) async {
+    final dio = Dio();
+    final url = 'http://192.168.14.143:8000/api/forgot-password';
+    final data = {'email': email};
+
+    try {
+      final response = await dio.post(url, data: data);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Şifre sıfırlama linki e-posta adresinize gönderildi.')),
+        );
+      } else {
+        showError('Bir hata oluştu, lütfen tekrar deneyin.');
+      }
+    } catch (e) {
+      showError('Bir hata oluştu, lütfen tekrar deneyin. ${e.toString()}');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,9 +90,8 @@ class _PasswordPageState extends State<PasswordPage> {
                     autofocus: false,
                     isPassword: false,
                     hint: "example@gmail.com",
-                    controller: passwordController,
+                    controller: emailController,
                     callback: (value) {
-                      // burada kullanıcı girişini alabilirsin
                     },
                   ),
                 ),
@@ -79,13 +106,20 @@ class _PasswordPageState extends State<PasswordPage> {
                     snackText: "Kod gönderildi",
                     snack: true,
                     isNavigation: true,
-                    onPress: true, // Artık butona basılsın istiyorsan true yap
-                    callback: (value) {
+                    onPress: true,
+                    callback: (value) async {
                       if (value == "ok") {
-                        // buraya gönderme işlemini yaz
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Kod gönderildi")),
-                        );
+
+                        final email = emailController.text.trim();
+
+                        if (email.isNotEmpty) {
+                          await sendResetLink(email);
+                        }
+                        else
+                        {
+                          showError("Lütfen geçerli bir e-posta adresi girin.");
+                        }
+
                       }
                     },
                   ),
@@ -98,3 +132,5 @@ class _PasswordPageState extends State<PasswordPage> {
     );
   }
 }
+
+

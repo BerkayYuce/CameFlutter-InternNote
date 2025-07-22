@@ -4,6 +4,7 @@ import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart';
+import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -40,6 +41,24 @@ class _RegisterPageState extends State<RegisterPage> {
     confirmPasswordController.dispose();
     super.dispose();
   }
+
+
+  void doUserRegistration() async {
+    final username = nameController.text.trim();
+    final email = usernameController.text.trim();
+    final password = passwordController.text.trim();
+
+    final user = ParseUser.createUser(username, password, email);
+
+    var response = await user.signUp();
+
+    if (response.success) {
+      showError(
+          'User was successfully created! Please verify your email before Login');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,8 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           showError("Şifreler eşleşmiyor");
                           return;
                         }
-
-
+                        //emailValidatorFlutter.validateEmail(email1);
 
 
                           final response = await Dio().post(
@@ -200,10 +218,6 @@ class _RegisterPageState extends State<RegisterPage> {
                             showError("Kayıt başarısız oldu: ");
                           }
 
-
-
-                       //Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
-                        //showError("Kayıt başarılı!");
                       }
                     },
                   ),
