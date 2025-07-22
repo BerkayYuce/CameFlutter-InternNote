@@ -57,6 +57,7 @@ class LoginPage extends StatefulWidget {
 
     void showError(String message) {
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
 
@@ -219,7 +220,7 @@ class LoginPage extends StatefulWidget {
                                 );
 
                                 if (response.statusCode == 200 || response.statusCode == 201) {
-                                  showError("Giriş başarılı!");
+                                  //showError("Giriş başarılı!");
 
                                   final SharedPreferences prefs = await SharedPreferences.getInstance();
                                   final String? authToken = response.data['token']; //Tokeni al

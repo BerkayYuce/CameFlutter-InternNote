@@ -149,11 +149,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 child: CustomButton(
                   text: "Şifreyi Sıfırla",
                   snackText: "Şifre sıfırlanıyor...",
-                  snack: false, // Bu buton doğrudan API çağrısı yapacağı için snackbar'ı burada devre dışı bıraktık.
-                  isNavigation: false, // Kendisi navigasyon yapmayacak, sadece işlemi tetikleyecek.
+                  snack: false,
+                  isNavigation: false,
                   onPress: true,
                   callback: (value) async {
-                    // Butonun callback'i "ok" ise işlemi başlat
+
                     if (value == "ok") {
                       await resetPassword();
                     }
