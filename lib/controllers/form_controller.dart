@@ -2,7 +2,7 @@ class FormController {
   Map<String, dynamic> formValid(Map<String, dynamic> fields) {
     Map<String, dynamic> formValidReturn = {
       "status": "ok",
-      "message": "başarılı"
+      "message": "başarılı",
     };
 
     String value = fields["value"];

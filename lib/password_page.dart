@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/new_password_page.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
@@ -14,6 +15,8 @@ class PasswordPage extends StatefulWidget {
 class _PasswordPageState extends State<PasswordPage> {
 
   final TextEditingController emailController = TextEditingController();
+  late bool onPressButton = false;
+  bool nullEmail = false;
 
   @override
   void dispose() {
@@ -28,12 +31,16 @@ class _PasswordPageState extends State<PasswordPage> {
 
 
   Future<void> sendVerificationCode(String email) async {
+
+
     final dio = Dio();
     final url = 'http://192.168.14.143:8000/api/send-password-reset-code';
     final data = {'email': email};
 
     try {
       final response = await dio.post(url, data: data);
+
+      int ?error = response.statusCode;
 
       if (!mounted) return; // Widget hâlâ aktif mi? Değilse çık.
 
@@ -49,7 +56,10 @@ class _PasswordPageState extends State<PasswordPage> {
           ),
         );
       } else {
-        showError(response.data['message'] ?? 'Bir hata oluştu, lütfen tekrar deneyin.');
+        //showError(response.data['message'] ?? 'Bir hata oluştu, lütfen tekrar deneyin.');
+
+          showError(HttpStatusCodes.getMessage(error!));
+
       }
     } catch (e) {
       if (!mounted) return;
@@ -66,20 +76,27 @@ class _PasswordPageState extends State<PasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         title: const Text('Came Özak'),
         backgroundColor: Colors.blue,
       ),
+
       body: SafeArea(
         child: Center(
           child: Container(
             padding: const EdgeInsets.only(top: 110, bottom: 100),
             margin: const EdgeInsets.all(0),
             color: Colors.white,
+
             child: Column(
+
               mainAxisSize: MainAxisSize.min,
+
               children: [
+
                 // İkon
                 Container(
                   margin: const EdgeInsets.only(bottom: 20),
@@ -95,6 +112,7 @@ class _PasswordPageState extends State<PasswordPage> {
                       ),
                     ],
                   ),
+
                   child: const Icon(Icons.person, size: 150, color: Colors.blue),
                 ),
 
@@ -106,10 +124,17 @@ class _PasswordPageState extends State<PasswordPage> {
                     label: "Email",
                     autofocus: false,
                     isPassword: false,
+                    isValid: !nullEmail,
+
                     hint: "example@gmail.com",
                     controller: emailController,
                     callback: (value) {
-                      // Gerekirse email değişikliklerini burada işleyebilirsiniz
+
+                      setState(() {
+                        nullEmail = value.isEmpty;
+
+                      });
+
                     },
                   ),
                 ),
@@ -119,16 +144,25 @@ class _PasswordPageState extends State<PasswordPage> {
                   height: 42,
                   width: 95,
                   margin: const EdgeInsets.symmetric(vertical: 60),
+
                   child: CustomButton(
                     text: "Gönder",
                     snackText: "Kod gönderiliyor...",
-                    snack: true,
+                    snack: false,
                     isNavigation: true,
                     onPress: true,
                     callback: (value) async {
                       if (value == "ok") {
+
+                        setState(() {
+                          onPressButton = true;
+                        });
+
                         final email = emailController.text.trim();
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Kod gönderiliyor...")));
+                        
                         if (email.isNotEmpty) {
+                          
                           await sendVerificationCode(email);
                         } else {
                           showError("Lütfen geçerli bir e-posta adresi girin.");

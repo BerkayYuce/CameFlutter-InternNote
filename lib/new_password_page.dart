@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:login_page_flutter/services/HttpStatusCodes.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
@@ -22,6 +22,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+
+  bool nullValidation = false;
+  bool nullPass = false;
+  bool nullPass2 = false;
+
   @override
   void dispose() {
     codeController.dispose();
@@ -36,6 +41,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   }
 
   Future<void> resetPassword() async {
+
     final code = codeController.text.trim();
     final newPassword = newPasswordController.text;
     final confirmPassword = confirmPasswordController.text;
@@ -70,7 +76,10 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
         Navigator.popUntil(context, (route) => route.isFirst);
       } else {
-        showError(response.data['message'] ?? 'Şifre sıfırlanırken bir hata oluştu.');
+        //showError(response.data['message'] ?? 'Şifre sıfırlanırken bir hata oluştu.');
+        
+        showError(HttpStatusCodes.getMessage(error!));
+
       }
     } catch (e) {
       if (e is DioException && e.response != null) {
@@ -84,15 +93,20 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         title: const Text('Şifre Sıfırlama Onayı'),
         backgroundColor: Colors.blue,
       ),
+
       body: Center(
+
         child: SingleChildScrollView( // Klavye açıldığında içeriğin taşmasını önlemek için
           padding: const EdgeInsets.all(20.0),
+
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+
             children: [
               const Icon(Icons.lock_reset, size: 100, color: Colors.blue),
               const SizedBox(height: 30),
@@ -111,7 +125,15 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 controller: codeController,
                 autofocus: true,
                 isPassword: false,
-                callback: (value) {},
+                isValid: !nullValidation,
+                callback: (value) {
+
+                  setState(() {
+                    nullValidation = value.isEmpty;
+
+                  });
+
+                },
               ),
 
               const SizedBox(height: 20),
@@ -123,8 +145,16 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 label: "Yeni Şifre",
                 hint: "Yeni şifrenizi girin",
                 controller: newPasswordController,
-                isPassword: true, // Şifre alanı olduğu için maskele
-                callback: (value) {},
+                isPassword: true,
+                isValid: !nullPass,
+                callback: (value) {
+
+                  setState(() {
+                    nullPass = value.isEmpty;
+
+                  });
+
+                },
               ),
 
               const SizedBox(height: 20),
@@ -136,8 +166,16 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 label: "Yeni Şifre Tekrar",
                 hint: "Yeni şifrenizi tekrar girin",
                 controller: confirmPasswordController,
-                isPassword: true, // Şifre alanı olduğu için maskele
-                callback: (value) {},
+                isPassword: true,
+                isValid: !nullValidation,
+                callback: (value) {
+
+                  setState(() {
+                    nullPass2 = value.isEmpty;
+
+                  });
+
+                },
               ),
 
               const SizedBox(height: 40),

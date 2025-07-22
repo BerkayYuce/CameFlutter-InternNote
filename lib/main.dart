@@ -44,6 +44,8 @@ class LoginPage extends StatefulWidget {
     bool onPress = false;
     String username = "";
     String password = "";
+    bool nullPassword = false;
+    bool nullUsername = false;
 
     final Dio _dio = Dio(
 
@@ -55,11 +57,21 @@ class LoginPage extends StatefulWidget {
 
     );
 
+
+    @override
+    void dispose() {
+      usernameController.dispose();
+      passwordController.dispose();
+      super.dispose();
+    }
+
+
     void showError(String message) {
 
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
     }
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,13 +114,16 @@ class LoginPage extends StatefulWidget {
                     label: "Kullanıcı Adı",
                     autofocus: true,
                     isPassword: false,
+                    errorText: nullUsername ? "Kullanıcı adı boş olamaz!" : null,
                     hint: "example@gmail.com",
                     controller: usernameController,
+                    isValid: !nullUsername,
 
                     callback: (value){
 
                       setState(() {
                         username = value;
+                        nullUsername = value.isEmpty;
 
                       }
 
@@ -126,12 +141,15 @@ class LoginPage extends StatefulWidget {
                       autofocus: false,
                       isPassword: true,
                       hint: "",
+                      errorText: nullPassword ? "Şifre boş bırakılamaz!" : null,
                       controller: passwordController,
+                      isValid: !nullPassword,
 
                       callback: (value){
 
                         setState(() {
                           password = value;
+                          nullPassword =value.isEmpty;
 
                         });
                     },
@@ -158,6 +176,7 @@ class LoginPage extends StatefulWidget {
                         callback: (value) async {
 
                           if (value == "ok") {
+
                               FormController formController = FormController();
 
                               Map<String, dynamic> userValid = {
@@ -179,6 +198,11 @@ class LoginPage extends StatefulWidget {
                               Map<String, dynamic> userValidReturn = formController.formValid(userValid);
                               if (userValidReturn["status"] != "ok") {
                                 showError(userValidReturn["message"]);
+                                setState(() {
+                                  nullUsername = username.isEmpty;
+                                  nullPassword = password.isEmpty;
+                                });
+
                                 return;
                               }
 

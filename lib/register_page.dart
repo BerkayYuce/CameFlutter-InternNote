@@ -19,6 +19,11 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController confirmPasswordController = TextEditingController();
 
+  bool nullName = false;
+  bool nullUsername = false;
+  bool nullPassword = false;
+  bool nullPassword2 = false;
+
   final Dio _dio = Dio(
     BaseOptions(
       connectTimeout: const Duration(seconds: 5), // Bağlantı zaman aşımı
@@ -96,7 +101,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: false,
                     hint: "...",
                     controller: nameController,
-                    callback: (value) {},
+                    isValid: !nullName,
+                    callback: (value) {
+
+                      setState(() {
+                        nullName = value.isEmpty;
+
+                      });
+
+                    },
                   ),
                 ),
 
@@ -111,7 +124,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: false,
                     hint: "example@gmail.com",
                     controller: usernameController,
-                    callback: (value) {},
+                    isValid: !nullUsername,
+                    callback: (value) {
+
+                      setState(() {
+                        nullUsername = value.isEmpty;
+
+                      });
+
+                    },
                   ),
                 ),
 
@@ -126,7 +147,15 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: true,
                     hint: "",
                     controller: passwordController,
-                    callback: (value) {},
+                    isValid: !nullPassword,
+                    callback: (value) {
+
+                      setState(() {
+                        nullPassword = value.isEmpty;
+
+                      });
+
+                    },
                   ),
                 ),
 
@@ -141,7 +170,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: true,
                     hint: "",
                     controller: confirmPasswordController,
-                    callback: (value) {},
+                    isValid: !nullPassword2,
+
+                    callback: (value) {
+
+                      setState(() {
+                        nullPassword2 = value.isEmpty;
+
+                      });
+
+                    },
                   ),
                 ),
 
