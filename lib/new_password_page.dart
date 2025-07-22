@@ -145,6 +145,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 label: "Yeni Şifre",
                 hint: "Yeni şifrenizi girin",
                 controller: newPasswordController,
+                errorText: nullPass ? "Şifre alanı boş bırakılamaz!" : null,
                 isPassword: true,
                 isValid: !nullPass,
                 callback: (value) {
@@ -167,6 +168,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                 hint: "Yeni şifrenizi tekrar girin",
                 controller: confirmPasswordController,
                 isPassword: true,
+                errorText: nullPass2 ? "Şifre alanı boş bırakılamaz!" : null,
                 isValid: !nullValidation,
                 callback: (value) {
 

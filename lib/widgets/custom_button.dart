@@ -5,7 +5,7 @@ class CustomButton extends StatefulWidget {
 
   bool isNavigation;
   final String text;
-  final String snackText;
+  final String? snackText;
   bool snack;
   bool onPress;
   Function(String) callback;
@@ -41,7 +41,7 @@ class _CustomButtonState extends State<CustomButton> {
 
           final snackBar = SnackBar(
 
-            content: Text(widget.snackText),
+            content: Text(widget.snackText!),
 
             action: SnackBarAction(
               label: 'İptal',

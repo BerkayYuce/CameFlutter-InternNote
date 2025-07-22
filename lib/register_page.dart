@@ -123,6 +123,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     autofocus: false,
                     isPassword: false,
                     hint: "example@gmail.com",
+                    errorText: nullUsername ? "Kullanıcı adı boş bırakılamaz!" : null,
                     controller: usernameController,
                     isValid: !nullUsername,
                     callback: (value) {
@@ -147,6 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: true,
                     hint: "",
                     controller: passwordController,
+                    errorText: nullPassword ? "Şifre alanı boş bırakılamaz!" : null,
                     isValid: !nullPassword,
                     callback: (value) {
 
@@ -170,6 +172,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     isPassword: true,
                     hint: "",
                     controller: confirmPasswordController,
+                    errorText: nullPassword2 ? "Şifre alanı boş bırakılamaz" : null,
                     isValid: !nullPassword2,
 
                     callback: (value) {
