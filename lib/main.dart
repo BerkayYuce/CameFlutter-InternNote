@@ -213,7 +213,7 @@ class LoginPage extends StatefulWidget {
                                   options: Options(
                                     followRedirects: true, // Yönlendirmeleri otomatik takip et
                                     validateStatus: (status) {
-                                      return status != null && status < 500; // 3xx ve altı geçerli say
+                                      return status != null && status < 500; // 500 ve altı geçerli say
                                     },
                                   ),
                                 );
@@ -232,6 +232,7 @@ class LoginPage extends StatefulWidget {
                                   }
 
                                 } else {
+
                                   int? error = response.statusCode;
                                   showError(HttpStatusCodes.getMessage(error!));
                                 }
@@ -243,12 +244,12 @@ class LoginPage extends StatefulWidget {
 
                                 } else {
 
-                                  showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
+                                  //showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
                                 }
                                 print("Dio Hatası: $e");
                               } catch (e) {
 
-                                showError("Beklenmedik bir hata oluştu: ${e.toString()}");
+                                //showError("Beklenmedik bir hata oluştu: ${e.toString()}");
                                 print("Genel Hata: $e");
                               }
 
