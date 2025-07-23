@@ -1,3 +1,4 @@
+//
 // import 'package:dio/dio.dart';
 // import 'package:flutter/material.dart';
 // import 'package:login_page_flutter/new_password_page.dart';
@@ -13,10 +14,9 @@
 // }
 //
 // class _PasswordPageState extends State<PasswordPage> {
-//
 //   final TextEditingController emailController = TextEditingController();
-//   late bool onPressButton = false;
-//   bool nullEmail = true;
+//   bool isButtonPressed = false;
+//   bool isEmailValid = true;
 //
 //   @override
 //   void dispose() {
@@ -29,10 +29,13 @@
 //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
 //   }
 //
+//   bool _isEmailValid(String email) {
+//
+//     final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+//     return regex.hasMatch(email);
+//   }
 //
 //   Future<void> sendVerificationCode(String email) async {
-//
-//
 //     final dio = Dio();
 //     final url = 'http://192.168.14.143:8000/api/send-password-reset-code';
 //     final data = {'email': email};
@@ -40,7 +43,7 @@
 //     try {
 //       final response = await dio.post(url, data: data);
 //
-//       int ?error = response.statusCode;
+//       int? error = response.statusCode;
 //
 //       if (!mounted) return; // Widget hâlâ aktif mi? Değilse çık.
 //
@@ -56,10 +59,7 @@
 //           ),
 //         );
 //       } else {
-//         //showError(response.data['message'] ?? 'Bir hata oluştu, lütfen tekrar deneyin.');
-//
-//           showError(HttpStatusCodes.getMessage(error!));
-//
+//         showError(HttpStatusCodes.getMessage(error!));
 //       }
 //     } catch (e) {
 //       if (!mounted) return;
@@ -72,29 +72,22 @@
 //     }
 //   }
 //
-//
 //   @override
 //   Widget build(BuildContext context) {
 //     return Scaffold(
-//
 //       resizeToAvoidBottomInset: false,
-//
 //       appBar: AppBar(
 //         title: const Text('Came Özak'),
 //         backgroundColor: Colors.blue,
 //       ),
-//
 //       body: SafeArea(
 //         child: Center(
 //           child: Container(
 //             padding: const EdgeInsets.only(top: 110, bottom: 100),
 //             margin: const EdgeInsets.all(0),
 //             color: Colors.white,
-//
 //             child: Column(
-//
 //               mainAxisSize: MainAxisSize.min,
-//
 //               children: [
 //
 //                 // İkon
@@ -112,11 +105,10 @@
 //                       ),
 //                     ],
 //                   ),
-//
 //                   child: const Icon(Icons.person, size: 150, color: Colors.blue),
 //                 ),
 //
-//                 // TextField
+//                 // Email TextField
 //                 Container(
 //                   margin: const EdgeInsets.only(top: 80, left: 30, right: 30),
 //                   child: CustomTextField(
@@ -124,18 +116,14 @@
 //                     label: "Email",
 //                     autofocus: false,
 //                     isPassword: false,
-//                     isValid: !nullEmail,
-//                     errorText: nullEmail ? "Email alanı boş bırakılamaz!" : null,
+//                     isValid: isEmailValid,
+//                     errorText: isEmailValid ? null : "Geçersiz veya boş e-posta!",
 //                     hint: "example@gmail.com",
 //                     controller: emailController,
-//
 //                     callback: (value) {
-//
 //                       setState(() {
-//                         nullEmail = value.isEmpty;
-//
+//                         isEmailValid = _isEmailValid(value);
 //                       });
-//
 //                     },
 //                   ),
 //                 ),
@@ -145,7 +133,6 @@
 //                   height: 42,
 //                   width: 95,
 //                   margin: const EdgeInsets.symmetric(vertical: 60),
-//
 //                   child: CustomButton(
 //                     text: "Gönder",
 //                     snackText: null,
@@ -154,15 +141,13 @@
 //                     onPress: true,
 //                     callback: (value) async {
 //                       if (value == "ok") {
-//
 //                         setState(() {
-//                           onPressButton = true;
+//                           isButtonPressed = true;
 //                         });
 //
 //                         final email = emailController.text.trim();
 //
-//
-//                         if (email.isNotEmpty) {
+//                         if (email.isNotEmpty && isEmailValid) {
 //                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Kod gönderiliyor...")));
 //                           await sendVerificationCode(email);
 //                         } else {
@@ -181,12 +166,19 @@
 //   }
 // }
 
+
+
+
+
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/new_password_page.dart';
 import 'package:login_page_flutter/services/httpStatusCodes.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async'; // Timer için
 
 class PasswordPage extends StatefulWidget {
   PasswordPage({super.key});
@@ -196,13 +188,37 @@ class PasswordPage extends StatefulWidget {
 }
 
 class _PasswordPageState extends State<PasswordPage> {
+
   final TextEditingController emailController = TextEditingController();
-  bool isButtonPressed = false;
+
+  bool isLoading = false; // Gönder butonu için yükleme durumu
   bool isEmailValid = true;
+
+
+  DateTime? _lastCodeSentTime;
+  int _remainingSeconds = 0;
+  Timer? _countdownTimer;
+  static const int _cooldownDuration = 300; // 5 dakika = 300 saniye
+  String? _cooldownEmail; // Cooldown süresince kilitli kalacak e-posta
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://192.168.14.143:8000/api',
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLastCodeSentTime();
+  }
 
   @override
   void dispose() {
     emailController.dispose();
+    _countdownTimer?.cancel(); // Timer'ı iptal et
     super.dispose();
   }
 
@@ -212,28 +228,86 @@ class _PasswordPageState extends State<PasswordPage> {
   }
 
   bool _isEmailValid(String email) {
-    // Basit bir e-posta doğrulaması
     final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return regex.hasMatch(email);
   }
 
+  // Son kod gönderme zamanını ve epostayı SharedPreferencestanyükle
+  Future<void> _loadLastCodeSentTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? timestamp = prefs.getString('lastPasswordResetCodeSent');
+    final String? email = prefs.getString('lastPasswordResetCodeEmail'); // E-postayı da yükle
+
+    if (timestamp != null && email != null) {
+      _lastCodeSentTime = DateTime.parse(timestamp);
+      _cooldownEmail = email; // Yüklenen e-postayı kaydet
+      emailController.text = email; // E-posta alanını önceden doldur
+      _startCountdownTimer();
+    }
+  }
+
+  // Geri sayım sayacını başlat
+  void _startCountdownTimer() {
+    if (_lastCodeSentTime == null) return;
+
+    final now = DateTime.now();
+    final elapsedSeconds = now.difference(_lastCodeSentTime!).inSeconds;
+    _remainingSeconds = _cooldownDuration - elapsedSeconds;
+
+    if (_remainingSeconds <= 0) {
+      setState(() {
+        _remainingSeconds = 0;
+        _lastCodeSentTime = null; // süre doldu zaman damgasını temizle
+        _cooldownEmail = null; // kilitli epostayı temizle
+        emailController.clear(); // eposta alanını temizle
+      });
+      _countdownTimer?.cancel();
+      return;
+    }
+
+    _countdownTimer?.cancel(); // mevcut timerı iptalet
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _countdownTimer?.cancel();
+          _lastCodeSentTime = null; // süre doldu zaman damgasını temizle
+          _cooldownEmail = null; // kilitli epostayı temizle
+          emailController.clear(); // eposta alanını temizle
+        }
+      });
+    });
+  }
+
   Future<void> sendVerificationCode(String email) async {
-    final dio = Dio();
-    final url = 'http://192.168.14.143:8000/api/send-password-reset-code';
+    setState(() {
+      isLoading = true; //yüklemeyi başlat
+    });
+
     final data = {'email': email};
 
     try {
-      final response = await dio.post(url, data: data);
+      final response = await _dio.post('/send-password-reset-code', data: data);
 
-      int? error = response.statusCode;
-
-      if (!mounted) return; // Widget hâlâ aktif mi? Değilse çık.
+      if (!mounted) return;
 
       if (response.statusCode == 200) {
+
+        // Başarılı olursa zaman damgasını ve e-postayı kaydet, geri sayımı başlat
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('lastPasswordResetCodeSent', DateTime.now().toIso8601String());
+        await prefs.setString('lastPasswordResetCodeEmail', email); // E-postayı kaydet
+
+        _lastCodeSentTime = DateTime.now();
+        _cooldownEmail = email; // State'i güncelle
+        _startCountdownTimer();
+
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Şifre sıfırlama kodu e-posta adresinize gönderildi.')),
         );
 
+        // Yeni kod gönderildikten sonra NewPasswordPage'e geç
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -241,21 +315,57 @@ class _PasswordPageState extends State<PasswordPage> {
           ),
         );
       } else {
-        showError(HttpStatusCodes.getMessage(error!));
+        String errorMessage = "Kod gönderilirken bir hata oluştu.";
+        if (response.data != null && response.data is Map) {
+          if (response.data.containsKey('message')) {
+            errorMessage = response.data['message'];
+          } else if (response.data.containsKey('errors')) {
+            Map<String, dynamic> errors = response.data['errors'];
+            errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
+          }
+        }
+        showError(errorMessage);
       }
-    } catch (e) {
+    } on DioException catch (e) {
       if (!mounted) return;
 
-      if (e is DioException && e.response != null) {
-        showError(e.response!.data['message'] ?? 'Bir hata oluştu: ${e.message}');
+      if (e.response != null) {
+        String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+        if (e.response?.data != null && e.response!.data is Map) {
+          if (e.response!.data.containsKey('message')) {
+            errorMessage = e.response!.data['message'];
+          } else if (e.response!.data.containsKey('errors')) {
+            Map<String, dynamic> errors = e.response!.data['errors'];
+            errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
+          }
+        }
+        showError(errorMessage);
       } else {
-        showError('Bir hata oluştu, lütfen tekrar deneyin. ${e.toString()}');
+        showError('Bir hata oluştu, lütfen internet bağlantınızı kontrol edin: ${e.toString()}');
       }
+      print("Dio Hatası: $e");
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin. ${e.toString()}');
+      print("Genel Hata: $e");
+    } finally {
+      setState(() {
+        isLoading = false; // Yüklemeyi durdur
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    final countdownText = _remainingSeconds > 0 ? '$minutes:${seconds.toString().padLeft(2, '0')}' : '';
+    // Buton her zaman tıklanabilir olacak isLoading durumu sadece metni etkileyecek
+    final bool canProceed = !isLoading && isEmailValid && emailController.text.isNotEmpty;
+    // E-posta alanı cooldown süresince ve _cooldownEmail doluysa salt okunur olacak
+    final bool isEmailReadOnly = _remainingSeconds > 0 && _cooldownEmail != null;
+
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -264,10 +374,8 @@ class _PasswordPageState extends State<PasswordPage> {
       ),
       body: SafeArea(
         child: Center(
-          child: Container(
-            padding: const EdgeInsets.only(top: 110, bottom: 100),
-            margin: const EdgeInsets.all(0),
-            color: Colors.white,
+          child: SingleChildScrollView( // Ekran görüntüsündeki taşmayı önlemek için SingleChildScrollView'ı kullanıyoruz
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0), // Dikey dolguyu azalttım
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -291,7 +399,7 @@ class _PasswordPageState extends State<PasswordPage> {
 
                 // Email TextField
                 Container(
-                  margin: const EdgeInsets.only(top: 80, left: 30, right: 30),
+                  margin: const EdgeInsets.only(top: 80, left: 10, right: 10), // Yan dolguları ayarladım
                   child: CustomTextField(
                     icon: Icons.mail,
                     label: "Email",
@@ -301,6 +409,7 @@ class _PasswordPageState extends State<PasswordPage> {
                     errorText: isEmailValid ? null : "Geçersiz veya boş e-posta!",
                     hint: "example@gmail.com",
                     controller: emailController,
+                    readOnly: isEmailReadOnly, // E-posta alanını salt okunur yap
                     callback: (value) {
                       setState(() {
                         isEmailValid = _isEmailValid(value);
@@ -309,30 +418,51 @@ class _PasswordPageState extends State<PasswordPage> {
                   ),
                 ),
 
+                // Cooldown metni
+                if (_remainingSeconds > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      'Yeni kod göndermek için kalan süre: $countdownText',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ),
+
                 // Buton
                 Container(
                   height: 42,
-                  width: 95,
+                  width: 120, // Buton genişliğini ayarladım
                   margin: const EdgeInsets.symmetric(vertical: 60),
                   child: CustomButton(
-                    text: "Gönder",
+                    text: isLoading
+                        ? "Gönderiliyor..."
+                        : (_remainingSeconds > 0 ? "İleri Git" : "Gönder"), // Metin değişimi
                     snackText: null,
                     snack: false,
                     isNavigation: true,
-                    onPress: true,
+                    onPress: canProceed, // E-posta geçerli ve yüklenmiyorsa tıklanabilir
                     callback: (value) async {
-                      if (value == "ok") {
-                        setState(() {
-                          isButtonPressed = true;
-                        });
-
+                      if (value == "ok" && canProceed) {
                         final email = emailController.text.trim();
-
-                        if (email.isNotEmpty && isEmailValid) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Kod gönderiliyor...")));
-                          await sendVerificationCode(email);
-                        } else {
+                        if (email.isEmpty || !isEmailValid) {
                           showError("Lütfen geçerli bir e-posta adresi girin.");
+                          return;
+                        }
+
+                        if (_remainingSeconds > 0) {
+                          // Cooldown aktifse, sadece NewPasswordPage'e geç
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Zaten bir kod gönderildi, lütfen e-postanızı kontrol edin.')),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewPasswordPage(email: email),
+                            ),
+                          );
+                        } else {
+                          // Cooldown aktif değilse, yeni kod gönder ve NewPasswordPage'e geç
+                          await sendVerificationCode(email);
                         }
                       }
                     },
@@ -346,3 +476,5 @@ class _PasswordPageState extends State<PasswordPage> {
     );
   }
 }
+
+

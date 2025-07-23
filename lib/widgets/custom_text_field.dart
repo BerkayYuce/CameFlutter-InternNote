@@ -108,6 +108,7 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController controller;
   final bool isValid;
   final String? errorText;
+  final bool readOnly;
 
   CustomTextField({
     super.key,
@@ -120,6 +121,7 @@ class CustomTextField extends StatefulWidget {
     required this.controller,
     required this.isValid,
     this.errorText,
+    this.readOnly = false,
   });
 
   @override
@@ -146,6 +148,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       controller: widget.controller,
       autofocus: widget.autofocus,
       obscureText: widget.isPassword ? !passwordVisible : false,  // Şifreyi gizlemek için passwordVisible kontrolü
+      readOnly: widget.readOnly,
 
       decoration: InputDecoration(
         errorText: widget.errorText,

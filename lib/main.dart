@@ -214,7 +214,7 @@ class LoginPage extends StatefulWidget {
                                   },
                                   {
                                     "type": "len",
-                                    "len": 6
+                                    "len": 8
                                   },
                                 ]
                               };
