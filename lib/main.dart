@@ -3,11 +3,13 @@ import 'package:login_page_flutter/controllers/form_controller.dart';
 import 'package:login_page_flutter/home_page.dart';
 import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
+import 'package:login_page_flutter/verified_register_page.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 
 void main() => runApp(const MyApp());
@@ -44,6 +46,7 @@ class LoginPage extends StatefulWidget {
     bool onPress = false;
     String username = "";
     String password = "";
+    String device_name ="flutter_app";
     bool nullPassword = false;
     bool nullUsername = false;
 
@@ -225,6 +228,9 @@ class LoginPage extends StatefulWidget {
                                 return;
                               }
 
+                              DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+                              AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+
                               try {
                                 final response = await Dio().post(
 
@@ -233,7 +239,7 @@ class LoginPage extends StatefulWidget {
                                   data: {
                                     'email': username,
                                     'password': password,
-                                    "device_name": "flutter_app"
+                                    "device_name": androidInfo.model,
                                   },
                                   options: Options(
                                     followRedirects: true, // Yönlendirmeleri otomatik takip et
@@ -243,7 +249,7 @@ class LoginPage extends StatefulWidget {
                                   ),
                                 );
 
-                                if (response.statusCode == 200 || response.statusCode == 201) {
+                                if (response.statusCode == 200 ) {
                                   //showError("Giriş başarılı!");
 
                                   final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -298,6 +304,7 @@ class LoginPage extends StatefulWidget {
                         callback: (value){
                           if (value == "ok"){
                             Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
+                            //Navigator.push(context, MaterialPageRoute(builder: (context) => VerifiedRegisterPage(),));
                           }
                         },
                       ),

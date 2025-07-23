@@ -8,6 +8,10 @@ class HttpStatusCodes {
     401: 'Yetkisiz',
     403: 'Yasaklı',
     404: 'Bulunamadı',
+    422: 'Bu e-posta adresi zaten sistemde kayıtlı. '
+         'Lütfen farklı bir e-posta adresi kullanın '
+         'veya giriş yapmayı deneyin.',
+    429: 'Çok fazla istek',
     500: 'Sunucu Hatası',
     503: 'Hizmet Kapanmış',
   };

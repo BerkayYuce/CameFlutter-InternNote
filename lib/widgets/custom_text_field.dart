@@ -110,6 +110,8 @@ class CustomTextField extends StatefulWidget {
   final String? errorText;
   final bool readOnly;
 
+
+
   CustomTextField({
     super.key,
     required this.icon,

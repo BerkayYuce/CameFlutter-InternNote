@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:login_page_flutter/main.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
 import 'package:parse_server_sdk_flutter/parse_server_sdk_flutter.dart';
 
 class RegisterPage extends StatefulWidget {
+
   const RegisterPage({super.key});
+  // final String email;
+  // const RegisterPage({Key? key, required this.email}) : super(key: key);
+
+
 
   @override
   State<RegisterPage> createState() => _RegisterPageState();
@@ -242,7 +248,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               headers: {'Accept': 'application/json'},
                               followRedirects: true, // Yönlendirmeleri otomatik takip et
                               validateStatus: (status) {
-                                return status != null && status < 400; // 3xx ve altı geçerli say
+                                return status != null && status < 500;
                               },
                             ),
                           );
@@ -255,8 +261,9 @@ class _RegisterPageState extends State<RegisterPage> {
                             Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage()));
                           } else {
 
-                            //showError("Kayıt başarısız oldu: ${response.data['message'] ?? 'Bilinmeyen bir hata oluştu.'}");
-                            showError("Kayıt başarısız oldu: ");
+                            int? error = response.statusCode;
+                            showError(HttpStatusCodes.getMessage(error!));
+
                           }
 
                       }
