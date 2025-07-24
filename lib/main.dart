@@ -3,7 +3,6 @@ import 'package:login_page_flutter/controllers/form_controller.dart';
 import 'package:login_page_flutter/home_page.dart';
 import 'package:login_page_flutter/password_page.dart';
 import 'package:login_page_flutter/register_page.dart';
-import 'package:login_page_flutter/verified_register_page.dart';
 import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:dio/dio.dart';
