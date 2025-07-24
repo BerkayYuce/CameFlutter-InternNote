@@ -204,8 +204,8 @@ class _PasswordPageState extends State<PasswordPage> {
       ),
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView( // Ekran görüntüsündeki taşmayı önlemek için SingleChildScrollView'ı kullanıyoruz
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0), // Dikey dolguyu azalttım
+          child: SingleChildScrollView( // Ekran görüntüsündeki taşmayı önlemek i
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

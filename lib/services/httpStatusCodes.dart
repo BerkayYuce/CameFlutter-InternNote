@@ -5,8 +5,8 @@ class HttpStatusCodes {
     201: 'Başarıyla oluşturuldu',
     302: 'Kullanıcı adı veya şifre yanlış!',
     400: 'Geçersiz İstek',
-    401: 'Yetkisiz',
-    403: 'Yasaklı',
+    401: 'Lütfen hesabınızı doğrulayınız',
+    403: 'Böyle bir hesap bulunamamıştır',
     404: 'Bulunamadı',
     422: 'Bu e-posta adresi zaten sistemde kayıtlı. '
          'Lütfen farklı bir e-posta adresi kullanın '
