@@ -63,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _initSharedPreferences(); // SharedPreferences'ı başlat ve otomatik giriş kontrolünü çağır
+    _initSharedPreferences();
   }
 
   // SharedPreferences'ı başlatma metodu
@@ -120,6 +120,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
         );
 
+        if (!mounted) return;
+
         if (response.statusCode == 200) {
 
           final String? authToken = response.data['token'];
@@ -131,7 +133,10 @@ class _LoginPageState extends State<LoginPage> {
             if (newRememberToken != null && newRememberToken != rememberToken) {
               await _prefs.setString('remember_me_token', newRememberToken);
             }
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+            if (mounted) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const HomePage()));
+            }
           }
         } else {
           // Otomatik giriş başarısız olursa tokenları temizle
@@ -144,12 +149,17 @@ class _LoginPageState extends State<LoginPage> {
         // Hata durumunda tokenları temizle
         await _prefs.remove('authToken');
         await _prefs.remove('remember_me_token');
-        showError('Otomatik giriş sırasında bir hata oluştu. Lütfen internet bağlantınızı kontrol edin.');
+        if (mounted) {
+          showError(
+              'Otomatik giriş sırasında bir hata oluştu. Lütfen internet bağlantınızı kontrol edin.');
+        }
       } catch (e) {
         print("Otomatik Giriş Genel Hata: $e");
         await _prefs.remove('authToken');
         await _prefs.remove('remember_me_token');
-        showError('Beklenmedik bir hata oluştu.');
+        if (mounted) {
+          showError('Beklenmedik bir hata oluştu.');
+        }
       }
     }
   }
@@ -266,7 +276,11 @@ class _LoginPageState extends State<LoginPage> {
                       margin: EdgeInsets.only(bottom: 180,top: 15, left: 10), alignment: Alignment.bottomRight,
 
                       child: GestureDetector(
-                        onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => PasswordPage(),));},
+                        onTap: (){
+                          if (mounted) {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => PasswordPage(),));
+                          }},
                         child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
                       ),
                     ),
@@ -357,6 +371,8 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               );
 
+                              if(!mounted) return;
+
                               if (response.statusCode == 200 ) {
 
                                 final String? authToken = response.data['token'];
@@ -371,7 +387,11 @@ class _LoginPageState extends State<LoginPage> {
                                     await _prefs.remove('remember_me_token');
                                   }
 
-                                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                                  if (mounted) {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (
+                                            context) => const HomePage()));
+                                  }
                                 }
 
                               } else {
@@ -380,6 +400,7 @@ class _LoginPageState extends State<LoginPage> {
                               }
 
                             } on DioException catch (e) {
+                              if (!mounted) return;
                               if (e.response != null) {
                                 //showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
                                 showError("Sunucu hatası.");
@@ -388,6 +409,7 @@ class _LoginPageState extends State<LoginPage> {
                                 showError("Bağlantı sağlanamıyor. Lütfen internet bağlantınızı kontrol edin.");
                               }
                             } catch (e) {
+                              if (!mounted) return;
                               showError("Beklenmedik bir hata oluştu: ${e.toString()}");
                               print("Genel Hata: $e");
                             }
@@ -411,8 +433,12 @@ class _LoginPageState extends State<LoginPage> {
 
                         callback: (value){
                           if (value == "ok"){
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
-                            //Navigator.push(context, MaterialPageRoute(builder: (context) => VerifiedRegisterPage(),));
+
+                            if (mounted){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => VerifiedRegisterPage(),));
+                            }
+
                           }
                         },
                       ),

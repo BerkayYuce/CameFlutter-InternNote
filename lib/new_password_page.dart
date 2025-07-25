@@ -132,6 +132,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
         ),
       );
 
+      if (!mounted) return;
+
       if (response.statusCode == 200) {
         // Başarılı olursa zamanı kaydet ve geri sayımı yeniden başlat
         final prefs = await SharedPreferences.getInstance();
@@ -145,8 +147,12 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
 
       }
     } on DioException catch (e) {
+
+      if (!mounted) return;
+
       if (e.response != null) {
         String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+
         if (e.response?.data != null && e.response!.data is Map) {
           if (e.response!.data.containsKey('message')) {
             errorMessage = e.response!.data['message'];
@@ -161,12 +167,14 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       }
       print("Dio Hatası: $e");
     } catch (e) {
+      if (!mounted) return;
       showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin: ${e.toString()}');
       print("Genel Hata: $e");
     } finally {
+      if (mounted){
       setState(() {
         _isResendingCode = false;
-      });
+      }); }
     }
   }
 
@@ -180,6 +188,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
     final confirmPassword = confirmPasswordController.text;
 
     if (code.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      if (!mounted) return;
       showError('Lütfen tüm alanları doldurun.');
       setState(() {
         _isResettingPassword = false;
@@ -188,6 +197,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
     }
 
     if (newPassword != confirmPassword) {
+      if (!mounted) return;
       showError('Şifreler uyuşmuyor.');
       setState(() {
         _isResettingPassword = false;
@@ -195,7 +205,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       return;
     }
 
-    if (newPassword.length < 8) { // Laravel'deki min:8 kuralına uygun
+    if (newPassword.length < 8) {
+      if (!mounted) return;
       showError('Şifre en az 8 karakter olmalı.');
       setState(() {
         _isResettingPassword = false;
@@ -224,12 +235,13 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
         }
       } else {
-
+        if (!mounted) return;
         int? error = response.statusCode;
         showError(HttpStatusCodes.getMessage(error!));
 
       }
     } on DioException catch (e) {
+      if (!mounted) return;
       if (e.response != null) {
         String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
         if (e.response?.data != null && e.response!.data is Map) {
@@ -246,12 +258,14 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       }
       print("Dio Hatası: $e");
     } catch (e) {
+      if (!mounted) return;
       showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin: ${e.toString()}');
       print("Genel Hata: $e");
     } finally {
+      if (mounted){
       setState(() {
         _isResettingPassword = false;
-      });
+      }); }
     }
   }
 
@@ -357,7 +371,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                   callback: (value) async {
                     if (value == "ok" && !_isResettingPassword) {
                       await resetPassword();
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
+                      if (mounted) {
+                        Navigator.pushAndRemoveUntil(
+                          context, MaterialPageRoute(builder: (context) =>
+                            LoginPage(),), (route) => false,);
+                      }
                     }
                   },
                 ),
