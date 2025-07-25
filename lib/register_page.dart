@@ -27,8 +27,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
   final Dio _dio = Dio(
     BaseOptions(
-      connectTimeout: const Duration(seconds: 5), // Bağlantı zaman aşımı
-      receiveTimeout: const Duration(seconds: 3), // Veri alma zaman aşımı
+      connectTimeout: const Duration(seconds: 10), // Bağlantı zaman aşımı
+      receiveTimeout: const Duration(seconds: 10), // Veri alma zaman aşımı
     ),
   );
 

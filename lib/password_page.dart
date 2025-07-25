@@ -31,8 +31,8 @@ class _PasswordPageState extends State<PasswordPage> {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'http://192.168.14.143:8000/api',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
     ),
   );
 
@@ -142,16 +142,6 @@ class _PasswordPageState extends State<PasswordPage> {
           ),
         );
       } else {
-        // String errorMessage = "Kod gönderilirken bir hata oluştu.";
-        // if (response.data != null && response.data is Map) {
-        //   if (response.data.containsKey('message')) {
-        //     errorMessage = response.data['message'];
-        //   } else if (response.data.containsKey('errors')) {
-        //     Map<String, dynamic> errors = response.data['errors'];
-        //     errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
-        //   }
-        // }
-        //showError(errorMessage);
 
         int? error = response.statusCode;
         showError(HttpStatusCodes.getMessage(error!));
@@ -171,13 +161,12 @@ class _PasswordPageState extends State<PasswordPage> {
         }
         showError(errorMessage);
       } else {
-        showError('Bir hata oluştu, lütfen internet bağlantınızı kontrol edin: ${e.toString()}');
+
+        showError('Bağlantı sağlanamıyor. Lütfen internet bağlantınızı kontrol edin');
       }
-      print("Dio Hatası: $e");
     } catch (e) {
       if (!mounted) return;
-      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin. ${e.toString()}');
-      print("Genel Hata: $e");
+      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin.');
     } finally {
       setState(() {
         isLoading = false; // Yüklemeyi durdur
@@ -204,7 +193,7 @@ class _PasswordPageState extends State<PasswordPage> {
       ),
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView( // Ekran görüntüsündeki taşmayı önlemek i
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -229,7 +218,7 @@ class _PasswordPageState extends State<PasswordPage> {
 
                 // Email TextField
                 Container(
-                  margin: const EdgeInsets.only(top: 80, left: 10, right: 10), // Yan dolguları ayarladım
+                  margin: const EdgeInsets.only(top: 80, left: 10, right: 10),
                   child: CustomTextField(
                     icon: Icons.mail,
                     label: "Email",
@@ -239,7 +228,7 @@ class _PasswordPageState extends State<PasswordPage> {
                     errorText: isEmailValid ? null : "Geçersiz veya boş e-posta!",
                     hint: "example@gmail.com",
                     controller: emailController,
-                    readOnly: isEmailReadOnly, // E-posta alanını salt okunur yap
+                    readOnly: isEmailReadOnly,
                     callback: (value) {
                       setState(() {
                         isEmailValid = _isEmailValid(value);
@@ -261,16 +250,16 @@ class _PasswordPageState extends State<PasswordPage> {
                 // Buton
                 Container(
                   height: 42,
-                  width: 120, // Buton genişliğini ayarladım
+                  width: 120,
                   margin: const EdgeInsets.symmetric(vertical: 60),
                   child: CustomButton(
                     text: isLoading
                         ? "Gönderiliyor..."
-                        : (_remainingSeconds > 0 ? "İleri Git" : "Gönder"), // Metin değişimi
+                        : (_remainingSeconds > 0 ? "İleri Git" : "Gönder"),
                     snackText: null,
                     snack: false,
                     isNavigation: true,
-                    onPress: canProceed, // E-posta geçerli ve yüklenmiyorsa tıklanabilir
+                    onPress: canProceed,
                     callback: (value) async {
                       if (value == "ok" && canProceed) {
                         final email = emailController.text.trim();
@@ -281,9 +270,9 @@ class _PasswordPageState extends State<PasswordPage> {
 
                         if (_remainingSeconds > 0) {
                           // Cooldown aktifse, sadece NewPasswordPage'e geç
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Zaten bir kod gönderildi, lütfen e-postanızı kontrol edin.')),
-                          );
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(content: Text('Zaten bir kod gönderildi, lütfen e-postanızı kontrol edin.')),
+                          // );
                           Navigator.push(
                             context,
                             MaterialPageRoute(

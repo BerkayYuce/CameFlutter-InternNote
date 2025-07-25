@@ -30,8 +30,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: 'http://192.168.14.143:8000/api',
-      connectTimeout: const Duration(seconds: 5),
-      receiveTimeout: const Duration(seconds: 3),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
     ),
   );
 
@@ -139,16 +139,6 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
         showError("Yeni şifre sıfırlama kodu e-posta adresinize gönderildi.");
         _startCountdownTimer(); // Başarılı olursa geri sayımı yeniden başlat
       } else {
-        // String errorMessage = "Kod gönderilirken bir hata oluştu.";
-        // if (response.data != null && response.data is Map) {
-        //   if (response.data.containsKey('message')) {
-        //     errorMessage = response.data['message'];
-        //   } else if (response.data.containsKey('errors')) {
-        //     Map<String, dynamic> errors = response.data['errors'];
-        //     errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
-        //   }
-        // }
-        // showError(errorMessage);
 
         int? error = response.statusCode;
         showError(HttpStatusCodes.getMessage(error!));
@@ -234,16 +224,6 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
         }
       } else {
-        // String errorMessage = "Şifre sıfırlanırken bir hata oluştu.";
-        // if (response.data != null && response.data is Map) {
-        //   if (response.data.containsKey('message')) {
-        //     errorMessage = response.data['message'];
-        //   } else if (response.data.containsKey('errors')) {
-        //     Map<String, dynamic> errors = response.data['errors'];
-        //     errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
-        //   }
-        // }
-        // showError(errorMessage);
 
         int? error = response.statusCode;
         showError(HttpStatusCodes.getMessage(error!));
@@ -377,6 +357,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                   callback: (value) async {
                     if (value == "ok" && !_isResettingPassword) {
                       await resetPassword();
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginPage(),));
                     }
                   },
                 ),

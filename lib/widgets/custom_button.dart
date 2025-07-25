@@ -41,7 +41,7 @@ class _CustomButtonState extends State<CustomButton> {
 
           final snackBar = SnackBar(
 
-            content: Text(widget.snackText!),
+            content: Text(widget.snackText?? 'Bir hata oluştu.'),
 
             action: SnackBarAction(
               label: 'İptal',
