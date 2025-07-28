@@ -1,0 +1,1988 @@
+main.dart:
+import 'package:flutter/material.dart';
+import 'package:login_page_flutter/controllers/form_controller.dart';
+import 'package:login_page_flutter/home_page.dart';
+import 'package:login_page_flutter/password_page.dart';
+import 'package:login_page_flutter/register_page.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
+
+void main() => runApp(const MyApp());
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Login Page',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home:  LoginPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget {
+
+  LoginPage({super.key});
+
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+
+}
+
+class _LoginPageState extends State<LoginPage> {
+
+  final TextEditingController usernameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+
+  bool onPress = false;
+  String username = "";
+  String password = "";
+  String device_name ="flutter_app";
+  bool nullPassword = false;
+  bool nullUsername = false;
+  bool isChecked = false; // checkbox durumu
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      //baseUrl: 'http://cameLaravel.test/api', // Bu kısım kullanılmıyor, tam URL veriliyor
+      connectTimeout: const Duration(seconds: 10), // Bağlantı zaman aşımı
+      receiveTimeout: const Duration(seconds: 10), // Veri alma zaman aşımı
+    ),
+  );
+
+  late SharedPreferences _prefs;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSharedPreferences();
+  }
+
+  // SharedPreferences'ı başlatma metodu
+  Future<void> _initSharedPreferences() async {
+    _prefs = await SharedPreferences.getInstance();
+    _checkRememberedUser(); // SharedPreferences hazır olduğunda otomatik giriş kontrolü
+  }
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Color getColor(Set<WidgetState> states) {
+    const Set<WidgetState> interactiveStates = <WidgetState>{
+      WidgetState.pressed,
+      WidgetState.hovered,
+      WidgetState.focused,
+    };
+    if (states.any(interactiveStates.contains)) {
+      return Colors.blue;
+    }
+    return Colors.blue;
+  }
+
+  void showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  // Otomatik giriş kontrolü
+  Future<void> _checkRememberedUser() async {
+    final String? rememberToken = _prefs.getString('remember_me_token');
+
+    if (rememberToken != null) {
+      try {
+        DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+        String currentDeviceName = androidInfo.model;
+
+        final response = await _dio.post(
+          'http://192.168.14.143:8000/api/auto-login',
+          data: {
+            'remember_token': rememberToken,
+            'device_name': currentDeviceName,
+          },
+          options: Options(
+            followRedirects: true,
+            validateStatus: (status) {
+              return status != null && status < 500;
+            },
+          ),
+        );
+
+        if (!mounted) return;
+
+        if (response.statusCode == 200) {
+
+          final String? authToken = response.data['token'];
+          final String? newRememberToken = response.data['remember_token'];
+
+          if (authToken != null) {
+            await _prefs.setString('authToken', authToken);
+            // Eğer remember_token değişirse veya güncellenirse tekrar kaydet
+            if (newRememberToken != null && newRememberToken != rememberToken) {
+              await _prefs.setString('remember_me_token', newRememberToken);
+            }
+            if (mounted) {
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (context) => const HomePage()));
+            }
+          }
+        } else {
+          // Otomatik giriş başarısız olursa tokenları temizle
+          await _prefs.remove('authToken');
+          await _prefs.remove('remember_me_token');
+          showError(response.data['message'] ?? 'Oturumunuzun süresi doldu, lütfen tekrar giriş yapın.');
+        }
+      } on DioException catch (e) {
+        print("Otomatik Giriş Dio Hatası: $e");
+        // Hata durumunda tokenları temizle
+        await _prefs.remove('authToken');
+        await _prefs.remove('remember_me_token');
+        if (mounted) {
+          showError(
+              'Otomatik giriş sırasında bir hata oluştu. Lütfen internet bağlantınızı kontrol edin.');
+        }
+      } catch (e) {
+        print("Otomatik Giriş Genel Hata: $e");
+        await _prefs.remove('authToken');
+        await _prefs.remove('remember_me_token');
+        if (mounted) {
+          showError('Beklenmedik bir hata oluştu.');
+        }
+      }
+    }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      resizeToAvoidBottomInset: false,
+
+      appBar: AppBar(
+        title: const Text('Came Özak'),
+        backgroundColor: Colors.blue,
+      ),
+
+      body: SafeArea(
+        child: Center(
+          child: Container(
+
+            padding: EdgeInsets.all(20),margin:  EdgeInsets.all(9),
+            decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.circular(15),),
+
+            child: Column(
+
+              mainAxisSize: MainAxisSize.min,
+              children: [
+
+                // İkon
+                Container(
+                  margin:  EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(color: Colors.white70,borderRadius: BorderRadius.all(Radius.circular(20)),
+                    boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.5),spreadRadius: 5, blurRadius: 15,offset: Offset(0, 3),),],),
+                  child:  Icon(Icons.person,size: 150,color: Colors.blue,),
+                ),
+
+                // Kullanıcı Adı
+                Container(
+
+                  margin:  EdgeInsets.only(bottom: 15,top: 15),
+                  child: CustomTextField(
+
+                    icon: Icons.person,
+                    label: "Kullanıcı Adı",
+                    autofocus: true,
+                    isPassword: false,
+                    errorText: nullUsername ? "Kullanıcı adı boş olamaz!" : null,
+                    hint: "example@gmail.com",
+                    controller: usernameController,
+                    isValid: !nullUsername,
+
+                    callback: (value){
+
+                      setState(() {
+                        username = value;
+                        nullUsername = value.isEmpty;
+
+                      }
+
+                      );
+                    },
+                  ),
+                ),
+
+                // Şifre
+                Container(
+
+                    child: CustomTextField(
+                      icon: Icons.lock,
+                      label: "Şifre",
+                      autofocus: false,
+                      isPassword: true,
+                      hint: "",
+                      errorText: nullPassword ? "Şifre boş bırakılamaz!" : null,
+                      controller: passwordController,
+                      isValid: !nullPassword,
+
+                      callback: (value){
+
+                        setState(() {
+                          password = value;
+                          nullPassword =value.isEmpty;
+
+                        });
+                      },
+                    )
+                ),
+
+                Row(
+                  children: [
+
+                    Container(
+                      margin: EdgeInsets.only(bottom: 180,top: 15), alignment: Alignment.center,
+                      child: Text('Beni hatırla'),
+
+                    ),
+
+                    Container(
+                      margin: EdgeInsets.only(bottom: 180,top: 15), alignment: Alignment.bottomLeft,
+                      child: Checkbox(
+
+                        checkColor: Colors.white,
+                        fillColor: WidgetStateProperty.resolveWith(getColor),
+                        value: isChecked,
+                        onChanged: (bool? value) {
+                          setState(() {
+                            isChecked = value!;
+                          });
+                        },
+                      ),
+                    ),
+
+                    Container(
+                      margin: EdgeInsets.only(bottom: 180,top: 15, left: 10), alignment: Alignment.bottomRight,
+
+                      child: GestureDetector(
+                        onTap: (){
+                          if (mounted) {
+                            Navigator.push(context, MaterialPageRoute(
+                              builder: (context) => PasswordPage(),));
+                          }},
+                        child: Text('Şifremi unuttum',style: TextStyle(decoration: TextDecoration.underline,color:Colors.blue)),
+                      ),
+                    ),
+
+                  ],
+                ),
+
+                // Giriş Butonu
+                Row(
+                  children: [
+                    Container(
+                      width: 105,height: 40,margin: EdgeInsets.only(left: 25, bottom: 30),alignment: Alignment.bottomLeft,
+
+                      child: CustomButton(text: "Giriş yap",snackText: "", snack: false,isNavigation: false,onPress: true,
+
+                        callback: (value) async {
+
+                          if (value == "ok") {
+
+                            FormController formController = FormController();
+
+                            Map<String, dynamic> userValid = {
+                              "value": username,
+                              "validators": [
+                                {
+                                  "type": "empty"
+                                },
+                                {
+                                  "type": "len",
+                                  "len": 6 // Bu kısım e-posta için uygun olmayabilir, dikkat edin.
+                                },
+                                {
+                                  "type": "email"
+                                },
+                              ]
+                            };
+
+                            Map<String, dynamic> userValidReturn = formController.formValid(userValid);
+                            if (userValidReturn["status"] != "ok") {
+                              showError(userValidReturn["message"]);
+                              setState(() {
+                                nullUsername = username.isEmpty;
+                                nullPassword = password.isEmpty;
+                              });
+
+                              return;
+                            }
+
+                            Map<String, dynamic> passValid = {
+                              "value": password,
+                              "validators": [
+                                {
+                                  "type": "empty"
+                                },
+                                {
+                                  "type": "len",
+                                  "len": 8
+                                },
+                              ]
+                            };
+
+                            Map<String, dynamic> passValidReturn = formController.formValid(passValid);
+                            if (passValidReturn["status"] != "ok") {
+                              showError(passValidReturn["message"]);
+                              return;
+                            }
+
+                            DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+                            AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+                            String currentDeviceName = androidInfo.model; // Cihaz adını al
+
+                            try {
+                              final response = await _dio.post(
+
+                                'http://192.168.14.143:8000/api/login',
+
+                                data: {
+                                  'email': username,
+                                  'password': password,
+                                  "device_name": currentDeviceName,
+                                  "remember": isChecked,
+                                },
+                                options: Options(
+                                  followRedirects: true,
+                                  validateStatus: (status) {
+                                    return status != null && status < 500;
+                                  },
+                                ),
+                              );
+
+                              if(!mounted) return;
+
+                              if (response.statusCode == 200 ) {
+
+                                final String? authToken = response.data['token'];
+                                final String? rememberToken = response.data['remember_token'];
+
+                                if (authToken != null) {
+                                  await _prefs.setString('authToken', authToken);
+
+                                  if (isChecked && rememberToken != null) {
+                                    await _prefs.setString('remember_me_token', rememberToken);
+                                  } else {
+                                    await _prefs.remove('remember_me_token');
+                                  }
+
+                                  if (mounted) {
+                                    Navigator.pushReplacement(context,
+                                        MaterialPageRoute(builder: (
+                                            context) => const HomePage()));
+                                  }
+                                }
+
+                              } else {
+                                int? error = response.statusCode;
+                                showError(HttpStatusCodes.getMessage(error!));
+                              }
+
+                            } on DioException catch (e) {
+                              if (!mounted) return;
+                              if (e.response != null) {
+                                //showError("Sunucu hatası: ${e.response?.data['message'] ?? 'Bilinmeyen sunucu yanıtı.'}");
+                                showError("Sunucu hatası.");
+                                print("Genel Hata: $e");
+                              } else {
+                                showError("Bağlantı sağlanamıyor. Lütfen internet bağlantınızı kontrol edin.");
+                              }
+                            } catch (e) {
+                              if (!mounted) return;
+                              showError("Beklenmedik bir hata oluştu: ${e.toString()}");
+                              print("Genel Hata: $e");
+                            }
+
+                          }
+                        },
+
+                      ),
+
+                    ),
+
+                    Container(
+                      width: 96,height: 40,margin: EdgeInsets.only(left: 60, bottom: 30),alignment: Alignment.bottomRight,
+
+                      child: CustomButton(
+                        text: 'Kayıt ol',
+                        snackText: "",
+                        snack: false,
+                        isNavigation: true,
+                        onPress: true,
+
+                        callback: (value){
+                          if (value == "ok"){
+
+                            if (mounted){
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage(),));
+                              //Navigator.push(context, MaterialPageRoute(builder: (context) => VerifiedRegisterPage(),));
+                            }
+
+                          }
+                        },
+                      ),
+                    ),
+
+                  ],
+                ),
+              ],
+            ),
+
+          ),
+
+        ),
+      ),
+    );
+
+  }
+}
+-------------------------------------------------------------------------
+home_page.dart:
+// home_page.dart
+
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:login_page_flutter/main.dart';
+import 'package:dio/dio.dart';
+
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+
+  String _userName = 'Misafir';
+
+  final Dio _dio = Dio();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAndFetchUserName();
+  }
+
+  Future<void> _loadAndFetchUserName() async {
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? authToken = prefs.getString('authToken');//Tokenı getir
+
+    if (authToken != null) {
+      try {
+
+        final response = await _dio.get(
+
+          'http://192.168.14.143:8000/api/user',
+
+          options: Options(
+            headers: {
+              'Authorization': 'Bearer $authToken',
+              'Accept': 'application/json',
+            },
+          ),
+        );
+
+        if (response.statusCode == 200) {
+
+          if (response.data != null && response.data is Map && response.data.containsKey('name')) {
+
+            setState(() {
+              _userName = response.data['name'].toString();
+            });
+
+          } else {
+
+            print('API yanıtında isim bulunamadı veya yapı beklendiği gibi değil.');
+          }
+
+        } else {
+
+          print('APIden kullanıcı bilgisi alınamadı: ${response.statusCode}');
+
+          _logout();
+        }
+      } on DioException catch (e) {
+
+        print('Kullanıcı bilgisi çekilirken Dio Hatası: $e');
+
+        if (e.response?.statusCode == 401) {
+          _logout();
+        }
+      } catch (e) {
+        print('Kullanıcı bilgisi çekilirken genel hata: $e');
+      }
+    } else {
+      _logout();
+    }
+
+  }
+
+  // Çıkış (Logout) fonksiyonu
+  Future<void> _logout() async {
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('authToken'); // Token'ı sil
+    await prefs.remove('userName'); // Kullanıcı adını da sil
+
+    Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false,);
+  }
+
+  final List<Map<String, String>> items = List.generate(
+        20,
+        (index) => {
+      'title': 'Öğe ${index + 1}',
+      'description': 'Bu, ${index + 1}. öğenin açıklamasıdır. Daha fazla bilgi buraya yazılabilir.',
+    },
+  );
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+
+      body: Column(
+
+        children: [
+
+          // HEADER
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            decoration: BoxDecoration(
+              color: Colors.blue.shade700,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(30),
+                bottomRight: Radius.circular(30),
+              ),
+            ),
+
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+
+              children: [
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    icon: const Icon(Icons.logout, color: Colors.white, size: 30),
+                    onPressed: _logout,
+                    tooltip: 'Çıkış Yap',
+                  ),
+                ),
+
+                Text(
+                  'Hoş geldin, $_userName!', // Kullanıcı adını gösterecek
+                  style: const TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+
+                const SizedBox(height: 8),
+                const Text(
+                  'Görevlerin aşağıda listelendi.',
+                  style: TextStyle(fontSize: 16, color: Colors.white70),
+                ),
+              ],
+            ),
+          ),
+
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.all(20),
+              itemCount: items.length,
+
+              itemBuilder: (context, index) {
+                final item = items[index];
+
+                return Card(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  elevation: 5,
+                  child: ExpansionTile(
+                    leading: const Icon(Icons.task),
+                    title: Text(item['title']!),
+                    trailing: const Icon(Icons.expand_more),
+
+                    children: [
+
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        child: Text(
+                          item['description']!,
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+-----------------------------------------------------------------------------------
+password_page.dart:
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:login_page_flutter/new_password_page.dart';
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async'; // Timer için
+
+class PasswordPage extends StatefulWidget {
+  PasswordPage({super.key});
+
+  @override
+  State<PasswordPage> createState() => _PasswordPageState();
+}
+
+class _PasswordPageState extends State<PasswordPage> {
+
+  final TextEditingController emailController = TextEditingController();
+
+  bool isLoading = false; // Gönder butonu için yükleme durumu
+  bool isEmailValid = true;
+
+
+  DateTime? _lastCodeSentTime;
+  int _remainingSeconds = 0;
+  Timer? _countdownTimer;
+  static const int _cooldownDuration = 300; // 5 dakika = 300 saniye
+  String? _cooldownEmail; // Cooldown süresince kilitli kalacak e-posta
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://192.168.14.143:8000/api',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _loadLastCodeSentTime();
+  }
+
+  @override
+  void dispose() {
+    emailController.dispose();
+    _countdownTimer?.cancel(); // Timer'ı iptal et
+    super.dispose();
+  }
+
+  void showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  bool _isEmailValid(String email) {
+    final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return regex.hasMatch(email);
+  }
+
+  // Son kod gönderme zamanını ve epostayı SharedPreferencestanyükle
+  Future<void> _loadLastCodeSentTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? timestamp = prefs.getString('lastPasswordResetCodeSent');
+    final String? email = prefs.getString('lastPasswordResetCodeEmail'); // E-postayı da yükle
+
+    if (timestamp != null && email != null) {
+      _lastCodeSentTime = DateTime.parse(timestamp);
+      _cooldownEmail = email; // Yüklenen e-postayı kaydet
+      emailController.text = email; // E-posta alanını önceden doldur
+      _startCountdownTimer();
+    }
+  }
+
+  // Geri sayım sayacını başlat
+  void _startCountdownTimer() {
+    if (_lastCodeSentTime == null) return;
+
+    final now = DateTime.now();
+    final elapsedSeconds = now.difference(_lastCodeSentTime!).inSeconds;
+    _remainingSeconds = _cooldownDuration - elapsedSeconds;
+
+    if (_remainingSeconds <= 0) {
+      setState(() {
+        _remainingSeconds = 0;
+        _lastCodeSentTime = null; // süre doldu zaman damgasını temizle
+        _cooldownEmail = null; // kilitli epostayı temizle
+        emailController.clear(); // eposta alanını temizle
+      });
+      _countdownTimer?.cancel();
+      return;
+    }
+
+    _countdownTimer?.cancel(); // mevcut timerı iptalet
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _countdownTimer?.cancel();
+          _lastCodeSentTime = null; // süre doldu zaman damgasını temizle
+          _cooldownEmail = null; // kilitli epostayı temizle
+          emailController.clear(); // eposta alanını temizle
+        }
+      });
+    });
+  }
+
+  Future<void> sendVerificationCode(String email) async {
+    setState(() {
+      isLoading = true; //yüklemeyi başlat
+    });
+
+    final data = {'email': email};
+
+    try {
+      final response = await _dio.post('/send-password-reset-code', data: data);
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+
+        // Başarılı olursa zaman damgasını ve e-postayı kaydet, geri sayımı başlat
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('lastPasswordResetCodeSent', DateTime.now().toIso8601String());
+        await prefs.setString('lastPasswordResetCodeEmail', email); // E-postayı kaydet
+
+        _lastCodeSentTime = DateTime.now();
+        _cooldownEmail = email; // State'i güncelle
+        _startCountdownTimer();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Şifre sıfırlama kodu e-posta adresinize gönderildi.')),
+        );
+
+        // Yeni kod gönderildikten sonra NewPasswordPage'e geç
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NewPasswordPage(email: email),
+          ),
+        );
+      } else {
+
+        int? error = response.statusCode;
+        showError(HttpStatusCodes.getMessage(error!));
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+
+      if (e.response != null) {
+        String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+        if (e.response?.data != null && e.response!.data is Map) {
+          if (e.response!.data.containsKey('message')) {
+            errorMessage = e.response!.data['message'];
+          } else if (e.response!.data.containsKey('errors')) {
+            Map<String, dynamic> errors = e.response!.data['errors'];
+            errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
+          }
+        }
+        showError(errorMessage);
+      } else {
+
+        showError('Bağlantı sağlanamıyor. Lütfen internet bağlantınızı kontrol edin');
+      }
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin.');
+    } finally {
+      setState(() {
+        isLoading = false; // Yüklemeyi durdur
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    final countdownText = _remainingSeconds > 0 ? '$minutes:${seconds.toString().padLeft(2, '0')}' : '';
+    // Buton her zaman tıklanabilir olacak isLoading durumu sadece metni etkileyecek
+    final bool canProceed = !isLoading && isEmailValid && emailController.text.isNotEmpty;
+    // E-posta alanı cooldown süresince ve _cooldownEmail doluysa salt okunur olacak
+    final bool isEmailReadOnly = _remainingSeconds > 0 && _cooldownEmail != null;
+
+
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text('Came Özak'),
+        backgroundColor: Colors.blue,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 40.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // İkon
+                Container(
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: Colors.white70,
+                    borderRadius: const BorderRadius.all(Radius.circular(20)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 15,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.person, size: 150, color: Colors.blue),
+                ),
+
+                // Email TextField
+                Container(
+                  margin: const EdgeInsets.only(top: 80, left: 10, right: 10),
+                  child: CustomTextField(
+                    icon: Icons.mail,
+                    label: "Email",
+                    autofocus: false,
+                    isPassword: false,
+                    isValid: isEmailValid,
+                    errorText: isEmailValid ? null : "Geçersiz veya boş e-posta!",
+                    hint: "example@gmail.com",
+                    controller: emailController,
+                    readOnly: isEmailReadOnly,
+                    callback: (value) {
+                      setState(() {
+                        isEmailValid = _isEmailValid(value);
+                      });
+                    },
+                  ),
+                ),
+
+                // Cooldown metni
+                if (_remainingSeconds > 0)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Text(
+                      'Yeni kod göndermek için kalan süre: $countdownText',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
+                    ),
+                  ),
+
+                // Buton
+                Container(
+                  height: 42,
+                  width: 120,
+                  margin: const EdgeInsets.symmetric(vertical: 60),
+                  child: CustomButton(
+                    text: isLoading
+                        ? "Gönderiliyor..."
+                        : (_remainingSeconds > 0 ? "İleri Git" : "Gönder"),
+                    snackText: null,
+                    snack: false,
+                    isNavigation: true,
+                    onPress: canProceed,
+                    callback: (value) async {
+                      if (value == "ok" && canProceed) {
+                        final email = emailController.text.trim();
+                        if (email.isEmpty || !isEmailValid) {
+                          showError("Lütfen geçerli bir e-posta adresi girin.");
+                          return;
+                        }
+
+                        if (_remainingSeconds > 0) {
+                          // Cooldown aktifse, sadece NewPasswordPage'e geç
+                          // ScaffoldMessenger.of(context).showSnackBar(
+                          //   const SnackBar(content: Text('Zaten bir kod gönderildi, lütfen e-postanızı kontrol edin.')),
+                          // );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => NewPasswordPage(email: email),
+                            ),
+                          );
+                        } else {
+                          // Cooldown aktif değilse, yeni kod gönder ve NewPasswordPage'e geç
+                          await sendVerificationCode(email);
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+----------------------------------------------------------------------------------
+new_password_page.dart:
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'dart:async'; // Timer için
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:login_page_flutter/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class NewPasswordPage extends StatefulWidget {
+  final String email;
+
+  const NewPasswordPage({Key? key, required this.email}) : super(key: key);
+
+  @override
+  State<NewPasswordPage> createState() => _NewPasswordPageState();
+}
+
+class _NewPasswordPageState extends State<NewPasswordPage> {
+  final TextEditingController codeController = TextEditingController();
+  final TextEditingController newPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool nullValidation = false;
+  bool nullPass = false;
+  bool nullPass2 = false;
+  bool _isResettingPassword = false; // Şifre sıfırlama butonu için yükleme durumu
+  bool _isResendingCode = false; // Kod yeniden gönderme butonu için yükleme durumu
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://192.168.14.143:8000/api',
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
+
+  // Geri sayım için değişkenler
+  int _remainingSeconds = 0;
+  Timer? _countdownTimer;
+  static const int _cooldownDuration = 300; // 5 dakika = 300 saniye
+
+  @override
+  void initState() {
+    super.initState();
+    // Sayfa yüklendiğinde geri sayım başlatılır
+    _startCountdownTimer();
+  }
+
+  @override
+  void dispose() {
+    codeController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
+    _countdownTimer?.cancel(); // Timerı iptal et
+    super.dispose();
+  }
+
+  void showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _startCountdownTimer() {
+    // SharedPreferencestan son gönderim zamanını yükle
+    SharedPreferences.getInstance().then((prefs) {
+      final String? timestamp = prefs.getString('lastPasswordResetCodeSent');
+      if (timestamp != null) {
+        final lastSentTime = DateTime.parse(timestamp);
+        final now = DateTime.now();
+        final elapsedSeconds = now.difference(lastSentTime).inSeconds;
+
+        setState(() {
+          _remainingSeconds = _cooldownDuration - elapsedSeconds;
+        });
+
+        if (_remainingSeconds <= 0) {
+          _remainingSeconds = 0; // Süre dolduysa 0 yap
+          prefs.remove('lastPasswordResetCodeSent'); // Süre dolduğu için zamanı temizle
+        }
+
+        _countdownTimer?.cancel(); // Mevcut timerı iptal et
+        _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          setState(() {
+            if (_remainingSeconds > 0) {
+              _remainingSeconds--;
+            } else {
+              _countdownTimer?.cancel();
+              prefs.remove('lastPasswordResetCodeSent'); // Süre doldu zamanı temizle
+            }
+          });
+        });
+
+      } else {
+        // Eğer timestamp nullsa ilk kez kod gönderildiği varsayılır ve geri sayım başlatılır.
+        // Bu durum password_pageden ilk kez gelindiğinde veya uygulama yeniden başlatıldığında oluşur.
+        setState(() {
+          _remainingSeconds = _cooldownDuration;
+        });
+
+        _countdownTimer?.cancel();
+
+        _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          setState(() {
+            if (_remainingSeconds > 0) {
+              _remainingSeconds--;
+            } else {
+              _countdownTimer?.cancel();
+            }
+          });
+        });
+      }
+    });
+  }
+
+
+  Future<void> _sendResetCodeRequest() async {
+    setState(() {
+      _isResendingCode = true;
+    });
+
+    try {
+      final response = await _dio.post(
+        '/send-password-reset-code',
+        data: {
+          'email': widget.email
+        },
+        options: Options(
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (!mounted) return;
+
+      if (response.statusCode == 200) {
+        // Başarılı olursa zamanı kaydet ve geri sayımı yeniden başlat
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('lastPasswordResetCodeSent', DateTime.now().toIso8601String());
+        showError("Yeni şifre sıfırlama kodu e-posta adresinize gönderildi.");
+        _startCountdownTimer(); // Başarılı olursa geri sayımı yeniden başlat
+      } else {
+
+        int? error = response.statusCode;
+        showError(HttpStatusCodes.getMessage(error!));
+
+      }
+    } on DioException catch (e) {
+
+      if (!mounted) return;
+
+      if (e.response != null) {
+        String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+
+        if (e.response?.data != null && e.response!.data is Map) {
+          if (e.response!.data.containsKey('message')) {
+            errorMessage = e.response!.data['message'];
+          } else if (e.response!.data.containsKey('errors')) {
+            Map<String, dynamic> errors = e.response!.data['errors'];
+            errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
+          }
+        }
+        showError(errorMessage);
+      } else {
+        showError("İstek gönderilirken bir hata oluştu: Lütfen internet bağlantınızı kontrol edin.");
+      }
+      print("Dio Hatası: $e");
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin: ${e.toString()}');
+      print("Genel Hata: $e");
+    } finally {
+      if (mounted){
+      setState(() {
+        _isResendingCode = false;
+      }); }
+    }
+  }
+
+  Future<void> resetPassword() async {
+    setState(() {
+      _isResettingPassword = true;
+    });
+
+    final code = codeController.text.trim();
+    final newPassword = newPasswordController.text;
+    final confirmPassword = confirmPasswordController.text;
+
+    if (code.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+      if (!mounted) return;
+      showError('Lütfen tüm alanları doldurun.');
+      setState(() {
+        _isResettingPassword = false;
+      });
+      return;
+    }
+
+    if (newPassword != confirmPassword) {
+      if (!mounted) return;
+      showError('Şifreler uyuşmuyor.');
+      setState(() {
+        _isResettingPassword = false;
+      });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      if (!mounted) return;
+      showError('Şifre en az 8 karakter olmalı.');
+      setState(() {
+        _isResettingPassword = false;
+      });
+      return;
+    }
+
+    final data = {
+      'email': widget.email,
+      'code': code,
+      'password': newPassword,
+      'password_confirmation': confirmPassword,
+    };
+
+    try {
+      final response = await _dio.post('/reset-password-with-code', data: data);
+
+      if (response.statusCode == 200) {
+        // Şifre başarıyla sıfırlandığında cooldown zamanını temizle
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.remove('lastPasswordResetCodeSent');
+
+        showError("Şifreniz başarıyla sıfırlandı. Giriş yapabilirsiniz.");
+        if (mounted) {
+          Navigator.popUntil(context, (route) => route.isFirst); // Ana sayfaya veya LoginPageye dön
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+        }
+      } else {
+        if (!mounted) return;
+        int? error = response.statusCode;
+        showError(HttpStatusCodes.getMessage(error!));
+
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+      if (e.response != null) {
+        String errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+        if (e.response?.data != null && e.response!.data is Map) {
+          if (e.response!.data.containsKey('message')) {
+            errorMessage = e.response!.data['message'];
+          } else if (e.response!.data.containsKey('errors')) {
+            Map<String, dynamic> errors = e.response!.data['errors'];
+            errorMessage = errors.values.first is List ? errors.values.first.first : 'Doğrulama hatası.';
+          }
+        }
+        showError(errorMessage);
+      } else {
+        showError('Bir hata oluştu, lütfen internet bağlantınızı kontrol edin: ${e.toString()}');
+      }
+      print("Dio Hatası: $e");
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu, lütfen tekrar deneyin: ${e.toString()}');
+      print("Genel Hata: $e");
+    } finally {
+      if (mounted){
+      setState(() {
+        _isResettingPassword = false;
+      }); }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    final countdownText = _remainingSeconds > 0 ? '$minutes:${seconds.toString().padLeft(2, '0')}' : '';
+    final bool canResendCode = _remainingSeconds == 0 && !_isResendingCode;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Şifre Sıfırlama Onayı'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.lock_reset, size: 100, color: Colors.blue),
+              const SizedBox(height: 30),
+              Text(
+                '${widget.email} adresinize gönderilen doğrulama kodunu ve yeni şifrenizi girin.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              if (_remainingSeconds > 0)
+                Text(
+                  'Yeni kod göndermek için kalan süre: $countdownText',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              const SizedBox(height: 30),
+
+              // Doğrulama Kodu TextField
+              CustomTextField(
+                icon: Icons.vpn_key,
+                label: "Doğrulama Kodu",
+                hint: "E-postanıza gelen kodu girin",
+                controller: codeController,
+                autofocus: true,
+                isPassword: false,
+                isValid: !nullValidation,
+                callback: (value) {
+                  setState(() {
+                    nullValidation = value.isEmpty;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Yeni Şifre TextField
+              CustomTextField(
+                icon: Icons.lock,
+                autofocus: false,
+                label: "Yeni Şifre",
+                hint: "Yeni şifrenizi girin",
+                controller: newPasswordController,
+                errorText: nullPass ? "Şifre alanı boş bırakılamaz!" : null,
+                isPassword: true,
+                isValid: !nullPass,
+                callback: (value) {
+                  setState(() {
+                    nullPass = value.isEmpty;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Yeni Şifre Tekrar TextField
+              CustomTextField(
+                icon: Icons.lock,
+                autofocus: false,
+                label: "Yeni Şifre Tekrar",
+                hint: "Yeni şifrenizi tekrar girin",
+                controller: confirmPasswordController,
+                isPassword: true,
+                errorText: nullPass2 ? "Şifre alanı boş bırakılamaz!" : null,
+                isValid: !nullPass2, // nullValidation yerine nullPass2
+                callback: (value) {
+                  setState(() {
+                    nullPass2 = value.isEmpty;
+                  });
+                },
+              ),
+
+              const SizedBox(height: 40),
+
+              // Şifreyi Sıfırla Butonu
+              SizedBox(
+                height: 42,
+                width: 180, // Buton genişliğini artırdım
+                child: CustomButton(
+                  text: _isResettingPassword ? "Sıfırlanıyor..." : "Şifreyi Sıfırla",
+                  snackText: "",
+                  snack: false,
+                  isNavigation: false,
+                  onPress: !_isResettingPassword, // Yüklenirken devre dışı bırak
+                  callback: (value) async {
+                    if (value == "ok" && !_isResettingPassword) {
+                      await resetPassword();
+                      if (mounted) {
+                        Navigator.pushAndRemoveUntil(
+                          context, MaterialPageRoute(builder: (context) =>
+                            LoginPage(),), (route) => false,);
+                      }
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Yeniden Gönder Butonu
+              SizedBox(
+                height: 42,
+                width: 180, // Buton genişliğini artırdım
+                child: CustomButton(
+                  text: _isResendingCode
+                      ? "Gönderiliyor..."
+                      : (canResendCode ? "Kodu Yeniden Gönder" : "Yeniden Gönder (${countdownText})"),
+                  snackText: "",
+                  snack: false,
+                  isNavigation: false,
+                  onPress: canResendCode, // Süre dolduğunda ve yüklenmiyorsa aktif
+                  callback: (value) async {
+                    if (value == "ok" && canResendCode) {
+                      await _sendResetCodeRequest();
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+-----------------------------------------------------------------------------------------
+register_page.dart:
+import 'package:flutter/material.dart';
+import 'package:login_page_flutter/main.dart'; // LoginPage'e dönmek için
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'package:dio/dio.dart';
+import 'package:login_page_flutter/verify_registration_email_page.dart'; // Yeni doğrulama sayfası
+
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController(); // username yerine email
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
+
+  bool nullName = false;
+  bool nullEmail = false; // nullUsername yerine nullEmail
+  bool nullPassword = false;
+  bool nullPassword2 = false;
+  bool _isLoading = false; // Yükleme durumu için
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10), // Bağlantı zaman aşımı
+      receiveTimeout: const Duration(seconds: 10), // Veri alma zaman aşımı
+    ),
+  );
+
+  void showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  bool _isEmailValid(String email) {
+    final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return regex.hasMatch(email);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text('Came Özak'),
+        backgroundColor: Colors.blue,
+      ),
+      body: SafeArea(
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // İkon
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white70,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 15,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.person_add, size: 150, color: Colors.blue),
+                ),
+
+                Container(
+                  margin: const EdgeInsets.only(top: 50, left: 20, right: 20),
+                  child: CustomTextField(
+                    icon: Icons.person_add,
+                    label: "İsim",
+                    autofocus: false,
+                    isPassword: false,
+                    hint: "...",
+                    controller: nameController,
+                    isValid: !nullName,
+                    callback: (value) {
+                      setState(() {
+                        nullName = value.isEmpty;
+                      });
+                    },
+                  ),
+                ),
+
+                // Email Adresi
+                Container(
+                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  child: CustomTextField(
+                    icon: Icons.mail,
+                    label: "Email",
+                    autofocus: false,
+                    isPassword: false,
+                    hint: "example@gmail.com",
+                    errorText: nullEmail ? "Email boş bırakılamaz!" : null,
+                    controller: emailController,
+                    isValid: !nullEmail,
+                    callback: (value) {
+                      setState(() {
+                        nullEmail = value.isEmpty;
+                      });
+                    },
+                  ),
+                ),
+
+                // Şifre
+                Container(
+                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  child: CustomTextField(
+                    icon: Icons.lock,
+                    label: "Şifre",
+                    autofocus: false,
+                    isPassword: true,
+                    hint: "",
+                    controller: passwordController,
+                    errorText: nullPassword ? "Şifre alanı boş bırakılamaz!" : null,
+                    isValid: !nullPassword,
+                    callback: (value) {
+                      setState(() {
+                        nullPassword = value.isEmpty;
+                      });
+                    },
+                  ),
+                ),
+
+                // Şifre Doğrulama
+                Container(
+                  margin: const EdgeInsets.only(top: 20, left: 20, right: 20),
+                  child: CustomTextField(
+                    icon: Icons.lock,
+                    label: "Şifreyi Doğrula",
+                    autofocus: false,
+                    isPassword: true,
+                    hint: "",
+                    controller: confirmPasswordController,
+                    errorText: nullPassword2 ? "Şifre alanı boş bırakılamaz" : null,
+                    isValid: !nullPassword2,
+                    callback: (value) {
+                      setState(() {
+                        nullPassword2 = value.isEmpty;
+                      });
+                    },
+                  ),
+                ),
+
+                // Onayla Butonu
+                Container(
+                  height: 42,
+                  width: 95,
+                  margin: const EdgeInsets.symmetric(horizontal: 100, vertical: 70),
+                  child: CustomButton(
+                    text: _isLoading ? "Gönderiliyor..." : "Kayıt Ol",
+                    snackText: "",
+                    snack: false,
+                    isNavigation: false, // Artık doğrudan navigasyon yapmayacak
+                    onPress: !_isLoading, // Yüklenirken devre dışı bırak
+                    callback: (value) async {
+                      if (value == "ok" && !_isLoading) {
+                        setState(() {
+                          _isLoading = true; // Yüklemeyi başlat
+                        });
+
+                        final name = nameController.text.trim();
+                        final email = emailController.text.trim(); // username yerine email
+                        final password = passwordController.text.trim();
+                        final confirmPassword = confirmPasswordController.text.trim();
+
+                        if (name.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                          showError("Tüm alanlar doldurulmalı");
+                          setState(() { _isLoading = false; });
+                          return;
+                        }
+
+                        if (!_isEmailValid(email)) {
+                          showError("Geçerli bir e-posta adresi giriniz");
+                          setState(() { _isLoading = false; });
+                          return;
+                        }
+
+                        if (password.length < 8) { // Laravel'deki min:8 kuralına uygun
+                          showError("Şifre en az 8 karakter olmalı");
+                          setState(() { _isLoading = false; });
+                          return;
+                        }
+
+                        if (password != confirmPassword) {
+                          showError("Şifreler eşleşmiyor");
+                          setState(() { _isLoading = false; });
+                          return;
+                        }
+
+                        try {
+                          final response = await _dio.post(
+                            'http://192.168.14.143:8000/api/register',
+                            data: {
+                              'name': name,
+                              'email': email,
+                              'password': password,
+                              "password_confirmation": confirmPassword, // confirmPassword kullanıldı
+                            },
+                            options: Options(
+                              headers: {'Accept': 'application/json'},
+                              validateStatus: (status) {
+                                return status != null && status < 500;
+                              },
+                            ),
+                          );
+
+                          if (response.statusCode == 200) {
+                            showError(response.data['message'] ?? "Doğrulama kodu gönderildi!");
+                            // Kullanıcıyı doğrulama sayfasına yönlendir
+                            if (mounted) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VerifyRegistrationEmailPage(
+                                    email: email,
+                                    name: name,
+                                    password: password,
+                                    passwordConfirmation: confirmPassword,
+                                  ),
+                                ),
+                              );
+                            }
+                          } else {
+                            // API'den gelen spesifik hata mesajını göster
+                            String errorMessage = "Kayıt başarısız oldu.";
+                            if (response.data != null && response.data is Map && response.data.containsKey('message')) {
+                              errorMessage = response.data['message'];
+                            } else {
+                              int? error = response.statusCode;
+                              errorMessage = HttpStatusCodes.getMessage(error!);
+                            }
+                            showError(errorMessage);
+                          }
+                        } on DioException catch (e) {
+                          if (!mounted) return;
+                          String errorMessage = "Bir hata oluştu.";
+                          if (e.response != null) {
+                            // Sunucudan gelen hata yanıtı varsa
+                            if (e.response!.data != null && e.response!.data is Map && e.response!.data.containsKey('message')) {
+                              errorMessage = e.response!.data['message'];
+                            } else if (e.response!.statusCode == 422) { // Doğrulama hatası
+                              errorMessage = "Girilen bilgilerde hata var.";
+                              if (e.response!.data != null && e.response!.data is Map && e.response!.data.containsKey('errors')) {
+                                Map<String, dynamic> errors = e.response!.data['errors'];
+                                // 'email' alanında spesifik bir hata varsa onu göster
+                                if (errors.containsKey('email')) {
+                                  errorMessage = errors['email'][0]; // "Email zaten alınmış." gibi
+                                } else if (errors.containsKey('password')) { // Şifre doğrulamada hata varsa
+                                  errorMessage = errors['password'][0];
+                                }
+                                // Diğer alanlar için de benzer kontroller eklenebilir
+                              }
+                            } else {
+                              errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+                            }
+                          } else {
+                            // Ağ hatası (internet yok, zaman aşımı vb.)
+                            errorMessage = 'İnternet bağlantınızı kontrol edin.';
+                          }
+                          showError(errorMessage);
+                          print("Dio Hata: $e");
+                        } catch (e) {
+                          if (!mounted) return;
+                          showError('Beklenmedik bir hata oluştu: ${e.toString()}');
+                          print("Genel Hata: $e");
+                        } finally {
+                          setState(() {
+                            _isLoading = false; // Yüklemeyi durdur
+                          });
+                        }
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+------------------------------------------------------------------------------------
+verify_registration_email_page.dart:
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:login_page_flutter/main.dart'; // LoginPage'e dönmek için
+import 'package:login_page_flutter/services/httpStatusCodes.dart';
+import 'package:login_page_flutter/widgets/custom_button.dart';
+import 'package:login_page_flutter/widgets/custom_text_field.dart';
+import 'dart:async'; // Timer için
+
+class VerifyRegistrationEmailPage extends StatefulWidget {
+  final String email;
+  final String name;
+  final String password;
+  final String passwordConfirmation;
+
+  const VerifyRegistrationEmailPage({
+    Key? key,
+    required this.email,
+    required this.name,
+    required this.password,
+    required this.passwordConfirmation,
+  }) : super(key: key);
+
+  @override
+  State<VerifyRegistrationEmailPage> createState() => _VerifyRegistrationEmailPageState();
+}
+
+class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPage> {
+  final TextEditingController codeController = TextEditingController();
+  bool _isVerifying = false; // Doğrulama butonu için yükleme durumu
+  bool _isResendingCode = false; // Yeniden gönderme butonu için yükleme durumu
+
+  // Geri sayım için değişkenler
+  int _remainingSeconds = 0;
+  Timer? _countdownTimer;
+  static const int _cooldownDuration = 60; // 1 dakika = 60 saniye (AuthController'daki ile uyumlu olmalı!)
+
+  final Dio _dio = Dio(
+    BaseOptions(
+      baseUrl: 'http://192.168.14.143:8000/api', // API base URL'niz
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
+    ),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    // Sayfa yüklendiğinde geri sayım başlatılır
+    _startCountdownTimer();
+  }
+
+  @override
+  void dispose() {
+    codeController.dispose();
+    _countdownTimer?.cancel();
+    super.dispose();
+  }
+
+  void showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  void _startCountdownTimer() {
+    setState(() {
+      _remainingSeconds = _cooldownDuration;
+    });
+
+    _countdownTimer?.cancel();
+    _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {
+        if (_remainingSeconds > 0) {
+          _remainingSeconds--;
+        } else {
+          _countdownTimer?.cancel();
+        }
+      });
+    });
+  }
+
+  Future<void> _resendVerificationCode() async {
+    setState(() {
+      _isResendingCode = true;
+      codeController.clear(); // Yeniden gönderimde eski kodu temizle
+    });
+
+    try {
+      final response = await _dio.post(
+        // 'register' endpoint'i artık doğrulama kodu gönderiyor
+        '/register',
+        data: {
+          'name': widget.name,
+          'email': widget.email,
+          'password': widget.password,
+          'password_confirmation': widget.passwordConfirmation,
+        },
+        options: Options(
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        showError(response.data['message'] ?? "Yeni doğrulama kodu e-posta adresinize gönderildi.");
+        _startCountdownTimer(); // Geri sayımı yeniden başlat
+      } else {
+        String errorMessage = "Kod gönderilirken bir hata oluştu.";
+        if (response.data != null && response.data is Map && response.data.containsKey('message')) {
+          errorMessage = response.data['message'];
+        } else {
+          int? error = response.statusCode;
+          errorMessage = HttpStatusCodes.getMessage(error!);
+        }
+        showError(errorMessage);
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+      String errorMessage = "Bir hata oluştu.";
+      if (e.response != null) {
+        if (e.response!.data != null && e.response!.data is Map && e.response!.data.containsKey('message')) {
+          errorMessage = e.response!.data['message'];
+        } else {
+          errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+        }
+      } else {
+        errorMessage = 'İnternet bağlantınızı kontrol edin.';
+      }
+      showError(errorMessage);
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu: ${e.toString()}');
+    } finally {
+      setState(() {
+        _isResendingCode = false;
+      });
+    }
+  }
+
+  Future<void> _verifyEmailAndRegister() async {
+    setState(() {
+      _isVerifying = true;
+    });
+
+    final code = codeController.text.trim();
+
+    if (code.isEmpty) {
+      showError('Lütfen doğrulama kodunu girin.');
+      setState(() {
+        _isVerifying = false;
+      });
+      return;
+    }
+
+    // `device_name` değeri, `AuthController`'da token oluşturmak için gerekli.
+    // Bu değeri Flutter uygulamanızdan geldiğini belirtmek için kullanıyoruz.
+    final deviceName = 'flutter_app';
+
+    try {
+      final response = await _dio.post(
+        '/verify-email', // E-posta doğrulama için yeni endpoint
+        data: {
+          'name': widget.name,
+          'email': widget.email,
+          'password': widget.password,
+          'password_confirmation': widget.passwordConfirmation,
+          'code': code,
+          'device_name': deviceName,
+        },
+        options: Options(
+          headers: {'Accept': 'application/json'},
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode == 201) { // 201 Created durum kodu bekleniyor (başarılı kayıt)
+        showError(response.data['message'] ?? "E-posta başarıyla doğrulandı ve kaydınız tamamlandı.");
+        if (mounted) {
+          // Başarılı kayıttan sonra LoginPage'e dön
+          Navigator.popUntil(context, (route) => route.isFirst);
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+        }
+      } else {
+        // API'den gelen spesifik hata mesajını göster
+        String errorMessage = "Doğrulama başarısız oldu.";
+        if (response.data != null && response.data is Map && response.data.containsKey('message')) {
+          errorMessage = response.data['message'];
+        } else {
+          int? error = response.statusCode;
+          errorMessage = HttpStatusCodes.getMessage(error!);
+        }
+        showError(errorMessage);
+      }
+    } on DioException catch (e) {
+      if (!mounted) return;
+      String errorMessage = "Bir hata oluştu.";
+      if (e.response != null) {
+        if (e.response!.data != null && e.response!.data is Map && e.response!.data.containsKey('message')) {
+          errorMessage = e.response!.data['message'];
+        } else if (e.response!.statusCode == 422) { // Doğrulama hatası (Laravel validation errors)
+          errorMessage = "Girilen bilgilerde hata var.";
+          if (e.response!.data != null && e.response!.data is Map && e.response!.data.containsKey('errors')) {
+            Map<String, dynamic> errors = e.response!.data['errors'];
+            if (errors.containsKey('email')) {
+              errorMessage = errors['email'][0]; // Örneğin: "The email has already been taken."
+            } else if (errors.containsKey('code')) {
+              errorMessage = errors['code'][0]; // Örneğin: "The code field is required."
+            }
+          }
+        } else {
+          errorMessage = "Sunucu hatası: ${e.response?.statusCode ?? 'Bilinmeyen'}";
+        }
+      } else {
+        // Ağ hatası (internet bağlantısı yok vb.)
+        errorMessage = 'İnternet bağlantınızı kontrol edin.';
+      }
+      showError(errorMessage);
+    } catch (e) {
+      if (!mounted) return;
+      showError('Beklenmedik bir hata oluştu: ${e.toString()}');
+    } finally {
+      setState(() {
+        _isVerifying = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final minutes = _remainingSeconds ~/ 60;
+    final seconds = _remainingSeconds % 60;
+    final countdownText = _remainingSeconds > 0 ? '$minutes:${seconds.toString().padLeft(2, '0')}' : '';
+    final bool canResendCode = _remainingSeconds == 0 && !_isResendingCode;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('E-posta Doğrulama'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.verified_user, size: 100, color: Colors.blue),
+              const SizedBox(height: 30),
+              Text(
+                '${widget.email} adresinize bir doğrulama kodu gönderildi. Lütfen kodu girin.',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 10),
+              if (_remainingSeconds > 0)
+                Text(
+                  'Yeni kod göndermek için kalan süre: $countdownText',
+                  style: const TextStyle(fontSize: 14, color: Colors.grey),
+                ),
+              const SizedBox(height: 30),
+
+              CustomTextField(
+                icon: Icons.vpn_key,
+                label: "Doğrulama Kodu",
+                hint: "E-postanıza gelen kodu girin",
+                controller: codeController,
+                autofocus: true,
+                isPassword: false,
+                isValid: true, // Kullanıcının girdiği her şeyi şimdilik geçerli kabul edelim
+                callback: (value) {
+                  // İhtiyaç olursa burada kod uzunluğu vb. doğrulama yapılabilir
+                },
+              ),
+
+              const SizedBox(height: 40),
+
+              SizedBox(
+                height: 42,
+                width: 180,
+                child: CustomButton(
+                  text: _isVerifying ? "Doğrulanıyor..." : "Hesabı Doğrula",
+                  snackText: "",
+                  snack: false,
+                  isNavigation: false, // Doğrudan navigasyon yapmayacak
+                  onPress: !_isVerifying, // Yüklenirken devre dışı bırak
+                  callback: (value) async {
+                    if (value == "ok" && !_isVerifying) {
+                      await _verifyEmailAndRegister();
+                    }
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 42,
+                width: 180,
+                child: CustomButton(
+                  text: _isResendingCode
+                      ? "Gönderiliyor..."
+                      : (canResendCode ? "Kodu Yeniden Gönder" : "Yeniden Gönder (${countdownText})"),
+                  snackText: "",
+                  snack: false,
+                  isNavigation: false,
+                  onPress: canResendCode, // Süre dolduğunda ve yüklenmiyorsa aktif
+                  callback: (value) async {
+                    if (value == "ok" && canResendCode) {
+                      await _resendVerificationCode();
+                    }
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

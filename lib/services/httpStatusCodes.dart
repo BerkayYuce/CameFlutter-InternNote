@@ -6,7 +6,7 @@ class HttpStatusCodes {
     302: 'Kullanıcı adı veya şifre yanlış!',
     400: 'Geçersiz İstek',
     401: 'Lütfen hesabınızı doğrulayınız',
-    403: 'Böyle bir hesap bulunamamıştır',
+    403: 'Hesap bulunamadı',
     404: 'Bulunamadı',
     422: 'Bu e-posta adresi zaten sistemde kayıtlı. '
          'Lütfen farklı bir e-posta adresi kullanın '
