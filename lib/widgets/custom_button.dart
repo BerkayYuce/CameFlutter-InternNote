@@ -1,63 +1,48 @@
+
+// lib/widgets/custom_button.dart
 import 'package:flutter/material.dart';
-import 'custom_text_field.dart';
+// custom_text_field.dart import'ına burada gerek yok
 
-class CustomButton extends StatefulWidget {
-
-  bool isNavigation;
+class CustomButton extends StatelessWidget { // StatefulWidget yerine StatelessWidget kullanıldı
   final String text;
-  final String? snackText;
-  bool snack;
-  bool onPress;
-  Function(String) callback;
+  final VoidCallback? onPressed; // onPressed parametresi eklendi, boş olabilir (null)
 
-  CustomButton({
+  const CustomButton({ // const constructor eklendi
     super.key,
     required this.text,
-    required this.snackText,
-    required this.snack,
-    required this.isNavigation,
-    required this.callback,
-    required this.onPress,
+    this.onPressed, // onPress'e karşılık geliyor, null ise buton devre dışı olur
   });
-
-  @override
-  State<CustomButton> createState() => _CustomButtonState();
-
-}
-
-class _CustomButtonState extends State<CustomButton> {
 
   @override
   Widget build(BuildContext context) {
     return Container(
-
-      decoration: BoxDecoration(color: Colors.white,borderRadius: BorderRadius.all(Radius.circular(20)),
-        boxShadow: [BoxShadow(color: Colors.grey.withValues(alpha: 0.5),spreadRadius: 5,blurRadius: 15,offset: Offset(0, 3),),],),
-
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5), // withValues yerine withOpacity
+            spreadRadius: 5,
+            blurRadius: 15,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
       child: ElevatedButton(
-        onPressed: widget.onPress ? ()
-        {
-          widget.callback("ok");
-
-          final snackBar = SnackBar(
-
-            content: Text(widget.snackText?? 'Bir hata oluştu.'),
-
-            action: SnackBarAction(
-              label: 'İptal',
-              onPressed: () {
-                //iptal işlemleri
-              },
-            ),
-
-          );
-
-          widget.snack
-              ? ScaffoldMessenger.of(context).showSnackBar(snackBar)
-              : null;
-
-        } :null ,
-        child: Text(widget.text),
+        onPressed: onPressed, // Doğrudan dışarıdan gelen onPressed'i kullanıyoruz
+        style: ElevatedButton.styleFrom(
+          // ElevatedButton'a daha iyi bir stil vermek için varsayılanlar ayarlanabilir
+          // Örneğin, butonun genişliği Container yerine burada kontrol edilebilir
+          minimumSize: const Size(double.infinity, 48), // Minimum genişlik ve yükseklik
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20), // Köşe yuvarlaklığı Container ile uyumlu
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        ),
+        child: Text(
+          text,
+          style: const TextStyle(fontSize: 16), // Yazı stili
+        ),
       ),
     );
   }

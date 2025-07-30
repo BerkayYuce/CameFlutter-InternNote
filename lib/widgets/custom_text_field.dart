@@ -1,101 +1,5 @@
-//
-// import 'package:flutter/material.dart';
-//
-// class CustomTextField extends StatefulWidget {
-//   final IconData icon;
-//   final String label;
-//   final String hint;
-//   final bool autofocus;
-//   final bool isPassword;
-//   final Function(String) callback;
-//   final TextEditingController controller;
-//   bool passwordVisible = false;
-//   final bool isValid;
-//   final String? errorText;
-//
-//   CustomTextField({
-//     super.key,
-//     required this.icon,
-//     required this.label,
-//     required this.hint,
-//     required this.autofocus,
-//     required this.isPassword,
-//     required this.callback,
-//     required this.controller,
-//     required this.isValid,
-//     this.errorText,
-//   });
-//
-//   @override
-//   State<CustomTextField> createState() => _CustomTextFieldState();
-// }
-//
-//
-// class _CustomTextFieldState extends State<CustomTextField> {
-//
-//   @override
-//   void initState(){
-//     super.initState();
-//     widget.passwordVisible=false;
-//   }
-//
-//   @override
-//   void dispose() {
-//     widget.controller.dispose();
-//     super.dispose();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//
-//     return TextFormField(
-//       controller: widget.controller,
-//       autofocus: widget.autofocus,
-//       obscureText: widget.passwordVisible,
-//
-//       onTapUpOutside: (event) {
-//         FocusManager.instance.primaryFocus?.unfocus();
-//       },
-//
-//
-//
-//       decoration: InputDecoration(
-//
-//         errorText: widget.errorText,
-//         border: OutlineInputBorder(
-//
-//           // borderSide: BorderSide(
-//           //   color: widget.isValid ? Colors.red : Colors.red,
-//           // ),
-//
-//         ),
-//
-//           hint: Text(widget.hint),
-//         labelText: widget.label,
-//         prefixIcon: Icon(widget.icon),
-//
-//           suffixIcon: widget.isPassword ? IconButton(
-//             icon: Icon(widget.passwordVisible
-//               ? Icons.visibility
-//               : Icons.visibility_off),
-//
-//           onPressed: () {
-//               setState(() {
-//                 widget.passwordVisible = !(widget.passwordVisible);
-//               },
-//
-//             );
-//           },
-//         )
-//             : null
-//       ),
-//
-//       onChanged: (text) => widget.callback(text),
-//     );
-//
-//   }
-// }
 
+// lib/widgets/custom_text_field.dart
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatefulWidget {
@@ -104,26 +8,22 @@ class CustomTextField extends StatefulWidget {
   final String hint;
   final bool autofocus;
   final bool isPassword;
-  final Function(String) callback;
   final TextEditingController controller;
-  final bool isValid;
-  final String? errorText;
+  final String? errorText; // Hata mesajı
   final bool readOnly;
+  final ValueChanged<String>? onChanged; // onChanged eklendi
 
-
-
-  CustomTextField({
+  const CustomTextField({ // const constructor eklendi
     super.key,
     required this.icon,
     required this.label,
-    required this.hint,
-    required this.autofocus,
-    required this.isPassword,
-    required this.callback,
+    this.hint = '', // Hint'e varsayılan değer verilebilir
+    this.autofocus = false, // autofocus'a varsayılan değer verilebilir
+    this.isPassword = false, // isPassword'a varsayılan değer verilebilir
     required this.controller,
-    required this.isValid,
     this.errorText,
     this.readOnly = false,
+    this.onChanged, // onChanged opsiyonel yapıldı
   });
 
   @override
@@ -131,51 +31,43 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  bool passwordVisible = false;  // passwordVisible'ı burada tanımlıyoruz.
+  late bool passwordVisible; // initState'te initialize edileceği için late olarak tanımlandı
 
   @override
-  void dispose() {
-    //widget.controller.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    passwordVisible = !widget.isPassword; // isPassword true ise gizle, değilse göster
   }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-
-        onTapUpOutside: (event) {
-         FocusManager.instance.primaryFocus?.unfocus();
-       },
-
+      onTapUpOutside: (event) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      },
       controller: widget.controller,
       autofocus: widget.autofocus,
-      obscureText: widget.isPassword ? !passwordVisible : false,  // Şifreyi gizlemek için passwordVisible kontrolü
+      obscureText: widget.isPassword ? !passwordVisible : false,
       readOnly: widget.readOnly,
+      onChanged: widget.onChanged, // Dışarıdan gelen onChanged'ı doğrudan kullanıyoruz
 
       decoration: InputDecoration(
-        errorText: widget.errorText,
-        border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: widget.isValid ? Colors.blue : Colors.red,  // Validasyon durumuna göre renk değişimi
-          ),
-        ),
+        errorText: widget.errorText, // Hata mesajını göster
+        border: const OutlineInputBorder(), // Varsayılan kenarlık. errorText varsa Flutter otomatik kırmızı yapar.
         hintText: widget.hint,
         labelText: widget.label,
         prefixIcon: Icon(widget.icon),
         suffixIcon: widget.isPassword
             ? IconButton(
-          icon: Icon(passwordVisible
-              ? Icons.visibility
-              : Icons.visibility_off),
+          icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
           onPressed: () {
             setState(() {
-              passwordVisible = !passwordVisible; // Şifre görünürlüğünü değiştiriyoruz
+              passwordVisible = !passwordVisible;
             });
           },
         )
             : null,
       ),
-      onChanged: (text) => widget.callback(text),  // Girdiği metni geri çağırıyoruz
     );
   }
 }
