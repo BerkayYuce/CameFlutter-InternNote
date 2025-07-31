@@ -18,6 +18,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -33,6 +34,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   void initState() {
     super.initState();
+
     nameController.addListener(_validateName);
     emailController.addListener(_validateEmail);
     passwordController.addListener(_validatePassword);
@@ -40,37 +42,47 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _validateName() {
+
     final result = _formController.formValid({
       "value": nameController.text,
       "validators": [{"type": "empty"}]
     });
+
     setState(() {
       _nameErrorText = result["status"] == "ok" ? null : result["message"];
     });
   }
 
   void _validateEmail() {
+
     final result = _formController.formValid({
       "value": emailController.text,
       "validators": [{"type": "empty"}, {"type": "email"}]
     });
+
     setState(() {
       _emailErrorText = result["status"] == "ok" ? null : result["message"];
     });
   }
 
   void _validatePassword() {
+
     final result = _formController.formValid({
       "value": passwordController.text,
       "validators": [{"type": "empty"}, {"type": "len", "len": 8}]
     });
+
     setState(() {
+
       _passwordErrorText = result["status"] == "ok" ? null : result["message"];
+
       if (passwordController.text.isNotEmpty &&
           confirmPasswordController.text.isNotEmpty &&
           passwordController.text != confirmPasswordController.text) {
         _confirmPasswordErrorText = "Şifreler uyuşmuyor!";
+
       } else if (confirmPasswordController.text.isNotEmpty &&
+
           passwordController.text == confirmPasswordController.text) {
         _confirmPasswordErrorText = null;
       }
@@ -78,16 +90,21 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _validateConfirmPassword() {
+
     final result = _formController.formValid({
       "value": confirmPasswordController.text,
       "validators": [{"type": "empty"}, {"type": "len", "len": 8}]
     });
+
     setState(() {
+
       _confirmPasswordErrorText = result["status"] == "ok" ? null : result["message"];
+
       if (passwordController.text.isNotEmpty &&
           confirmPasswordController.text.isNotEmpty &&
           passwordController.text != confirmPasswordController.text) {
         _confirmPasswordErrorText = "Şifreler uyuşmuyor!";
+
       } else if (confirmPasswordController.text.isNotEmpty &&
           passwordController.text == confirmPasswordController.text) {
         _confirmPasswordErrorText = null;
@@ -97,6 +114,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+
     nameController.removeListener(_validateName);
     emailController.removeListener(_validateEmail);
     passwordController.removeListener(_validatePassword);
@@ -110,7 +128,9 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   void _showSnackBar(String message, {bool isError = true}) {
+
     if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -131,20 +151,29 @@ class _RegisterPageState extends State<RegisterPage> {
         _confirmPasswordErrorText == null;
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
+
       appBar: AppBar(
         title: const Text('Yeni Hesap Oluştur'),
         backgroundColor: Colors.blue,
       ),
+
       body: SafeArea(
         child: BlocListener<AuthBloc, AuthState>(
+
           listener: (context, state) {
-            state.whenOrNull(
+
+            state.maybeWhen(
+
               emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
+
                 _showSnackBar(message, isError: false);
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -157,20 +186,29 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 );
               },
+
               error: (message) {
                 _showSnackBar(message, isError: true);
               },
+
+              orElse: () => null,
             );
           },
+
           child: Center(
             child: SingleChildScrollView(
+
               padding: const EdgeInsets.all(10),
+
               child: Container(
+
                 padding: const EdgeInsets.all(10),
+
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(15),
                   boxShadow: [
+
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.3),
                       spreadRadius: 2,
@@ -179,13 +217,19 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                 ),
+
                 child: Column(
+
                   mainAxisSize: MainAxisSize.min,
+
                   children: [
+
                     Container(
+
                       margin: const EdgeInsets.only(bottom: 20),
                       child: const Icon(Icons.person_add, size: 120, color: Colors.blue),
                     ),
+
                     CustomTextField(
                       icon: Icons.person,
                       label: "İsim",
@@ -193,7 +237,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: nameController,
                       errorText: _nameErrorText,
                     ),
+
                     const SizedBox(height: 15),
+
                     CustomTextField(
                       icon: Icons.mail,
                       label: "E-posta",
@@ -201,7 +247,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: emailController,
                       errorText: _emailErrorText,
                     ),
+
                     const SizedBox(height: 15),
+
                     CustomTextField(
                       icon: Icons.lock,
                       label: "Şifre",
@@ -210,7 +258,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: passwordController,
                       errorText: _passwordErrorText,
                     ),
+
                     const SizedBox(height: 15),
+
                     CustomTextField(
                       icon: Icons.lock,
                       label: "Şifreyi Tekrar",
@@ -219,33 +269,51 @@ class _RegisterPageState extends State<RegisterPage> {
                       controller: confirmPasswordController,
                       errorText: _confirmPasswordErrorText,
                     ),
+
                     const SizedBox(height: 30),
+
                     BlocBuilder<AuthBloc, AuthState>(
+
                       builder: (context, state) {
+
                         final bool isLoading = state.maybeWhen(
                           loading: () => true,
                           orElse: () => false,
                         );
+
                         return SizedBox(
                           height: 48,
                           width: double.infinity,
+
                           child: CustomButton(
                             text: isLoading ? "Kayıt Olunuyor..." : "Kayıt Ol",
                             onPressed: isLoading ? null : () async {
+
                               if (_isFormValid()) {
+
                                 String deviceName = 'unknown_device';
+
                                 try {
+
                                   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
                                   if (defaultTargetPlatform == TargetPlatform.android) {
+
                                     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
                                     deviceName = androidInfo.model;
+
                                   } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+
                                     IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
                                     deviceName = iosInfo.name;
+
                                   } else {
+
                                     deviceName = 'flutter_app_desktop';
                                   }
+
                                 } catch (e) {
+
                                   print("Cihaz adı alınırken hata oluştu (Register): $e");
                                 }
 
@@ -258,6 +326,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                     deviceName: deviceName,
                                   ),
                                 );
+
                               } else {
                                 _showSnackBar("Lütfen tüm alanları doğru şekilde doldurun.", isError: true);
                               }

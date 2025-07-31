@@ -9,17 +9,17 @@ class CustomTextField extends StatefulWidget {
   final bool autofocus;
   final bool isPassword;
   final TextEditingController controller;
-  final String? errorText; // Hata mesajı
+  final String? errorText;
   final bool readOnly;
-  final ValueChanged<String>? onChanged; // onChanged eklendi
+  final ValueChanged<String>? onChanged;
 
-  const CustomTextField({ // const constructor eklendi
+  const CustomTextField({
     super.key,
     required this.icon,
     required this.label,
-    this.hint = '', // Hint'e varsayılan değer verilebilir
-    this.autofocus = false, // autofocus'a varsayılan değer verilebilir
-    this.isPassword = false, // isPassword'a varsayılan değer verilebilir
+    this.hint = '',
+    this.autofocus = false,
+    this.isPassword = false,
     required this.controller,
     this.errorText,
     this.readOnly = false,
@@ -31,29 +31,32 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
-  late bool passwordVisible; // initState'te initialize edileceği için late olarak tanımlandı
+
+  late bool passwordVisible;
 
   @override
   void initState() {
     super.initState();
-    passwordVisible = !widget.isPassword; // isPassword true ise gizle, değilse göster
+    passwordVisible = !widget.isPassword;
   }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+
       onTapUpOutside: (event) {
         FocusManager.instance.primaryFocus?.unfocus();
       },
+
       controller: widget.controller,
       autofocus: widget.autofocus,
       obscureText: widget.isPassword ? !passwordVisible : false,
       readOnly: widget.readOnly,
-      onChanged: widget.onChanged, // Dışarıdan gelen onChanged'ı doğrudan kullanıyoruz
+      onChanged: widget.onChanged,
 
       decoration: InputDecoration(
-        errorText: widget.errorText, // Hata mesajını göster
-        border: const OutlineInputBorder(), // Varsayılan kenarlık. errorText varsa Flutter otomatik kırmızı yapar.
+        errorText: widget.errorText,
+        border: const OutlineInputBorder(),
         hintText: widget.hint,
         labelText: widget.label,
         prefixIcon: Icon(widget.icon),

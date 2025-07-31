@@ -9,16 +9,16 @@ abstract class EmailVerificationEvent with _$EmailVerificationEvent {
     required String password,
     required String passwordConfirmation,
     required String code,
-    required String deviceName, // Cihaz adı eklendi
-  }) = VerifyEmailRequested; // '_' kaldırıldı
+    required String deviceName,
+  }) = VerifyEmailRequested;
 
   const factory EmailVerificationEvent.resendVerificationCodeRequested({
     required String name,
     required String email,
     required String password,
     required String passwordConfirmation,
-    required String deviceName, // Cihaz adı burada da gerekli olabilir
-  }) = ResendVerificationCodeRequested; // '_' kaldırıldı
+    required String deviceName,
+  }) = ResendVerificationCodeRequested;
 
-  const factory EmailVerificationEvent.cooldownUpdated(int remainingSeconds) = CooldownUpdated; // '_' kaldırıldı
+  const factory EmailVerificationEvent.cooldownUpdated(int remainingSeconds) = CooldownUpdated;
 }

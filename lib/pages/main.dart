@@ -30,6 +30,7 @@ import 'package:login_page_flutter/bloc/auth/auth_state.dart';
 
 // Hata ayıklama için BlocObserver
 class SimpleBlocObserver extends BlocObserver {
+
   @override
   void onEvent(Bloc bloc, Object? event) {
     super.onEvent(bloc, event);
@@ -67,6 +68,7 @@ void main() async {
   final SharedPreferences prefs = await SharedPreferences.getInstance();
 
   String deviceName = 'unknown_device';
+
   try {
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
@@ -194,7 +196,7 @@ class _MyAppState extends State<MyApp> {
             break;
 
           default:
-          // Bilinmeyen bir rota geldiğinde varsayılan olarak LoginPage'e yönlendirme
+          //Bilinmeyen bir rota geldiğinde varsayılan olarak LoginPage'e yönlendirme
             print('⚠️ main.dart: Unknown route: ${settings.name}. Defaulting to LoginPage.');
 
             page = const LoginPage();
@@ -212,30 +214,45 @@ class _MyAppState extends State<MyApp> {
 
                 // listener: maybeWhen ile yan etkileri yönetme
                 state.maybeWhen(
+
                   success: (message, authToken, rememberMeToken, user) {
+
                     print('🎉 main.dart Listener: AuthSuccess state received! Message: $message');
+
                     ScaffoldMessenger.of(listenerContext).showSnackBar(
                       SnackBar(content: Text(message), backgroundColor: Colors.green),
                     );
+
                     print('🎉 main.dart Listener: Navigating to HomePage via named route and clearing stack.');
+
                     Navigator.of(listenerContext).pushNamedAndRemoveUntil('/home', (route) => false);
                   },
 
+
                   error: (message) {
+
                     print('🔴 main.dart Listener: AuthError state received! Message: $message');
+
                     ScaffoldMessenger.of(listenerContext).showSnackBar(
                       SnackBar(content: Text(message), backgroundColor: Colors.red),
                     );
+
                     print('🔴 main.dart Listener: Navigating to LoginPage due to error via named route and clearing stack.');
+
                     Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
                   },
 
+
                   emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
+
                     print('🟡 main.dart Listener: EmailVerificationRequired state received! Message: $message');
+
                     ScaffoldMessenger.of(listenerContext).showSnackBar(
                       SnackBar(content: Text(message), backgroundColor: Colors.orange),
                     );
+
                     print('🟡 main.dart Listener: Navigating to verify-email page via named route.');
+
                     Navigator.of(listenerContext).pushReplacementNamed(
                       '/verify-email',
                       arguments: {
@@ -247,16 +264,23 @@ class _MyAppState extends State<MyApp> {
                     );
                   },
 
+
                   initial: () {
+
                     print('🔄 main.dart Listener: AuthInitial state received. Ensuring navigation to root.');
                     // Koşulu kaldırarak veya sadeleştirerek her zaman giriş sayfasına yönlendir.
                     // Bu, logout sonrası her zaman login ekranına dönmenizi sağlar.
+
                     Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
                   },
+
+
                   loading: () {
+
                     print('⏳ main.dart Listener: AuthLoading state received. No explicit navigation.');
                   },
                   orElse: () {
+
                     print('🤔 main.dart Listener: Unhandled state in maybeWhen: ${state.runtimeType}. No action taken.');
                   },
                 );
@@ -265,6 +289,7 @@ class _MyAppState extends State<MyApp> {
               child: page,
             );
           },
+
           settings: settings,
         );
       },

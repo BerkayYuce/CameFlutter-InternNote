@@ -10,12 +10,14 @@ abstract class AuthEvent with _$AuthEvent {
 
   const factory AuthEvent.resetRequested() = ResetRequested;
 
+
   const factory AuthEvent.loginRequested({
     required String email,
     required String password,
     required String deviceName,
     required bool rememberMe,
   }) = LoginRequested;
+
 
   const factory AuthEvent.registerRequested({
     required String name,
@@ -25,12 +27,15 @@ abstract class AuthEvent with _$AuthEvent {
     required String deviceName, // register event'e eklendi
   }) = RegisterRequested;
 
+
   const factory AuthEvent.autoLoginRequested({
     required String rememberToken,
     required String deviceName,
   }) = AutoLoginRequested;
 
+
   const factory AuthEvent.logoutRequested() = LogoutRequested;
+
 
 // E-posta doğrulama event'leri AuthBloc'tan kaldırıldı.
 // const factory AuthEvent.sendVerificationEmail({

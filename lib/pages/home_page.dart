@@ -2,10 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_page_flutter/bloc/auth/auth_bloc.dart';
-import 'package:login_page_flutter/bloc/auth/auth_event.dart'; // AuthEvent import
-import 'package:login_page_flutter/bloc/auth/auth_state.dart'; // AuthState import
-// import 'package:login_page_flutter/pages/main.dart';   <-- BU SATIRI KALDIRIYORUZ!
-// import 'package:login_page_flutter/pages/login_page.dart'; // Bu import'a burada gerek yok, main.dart yönlendiriyor
+import 'package:login_page_flutter/bloc/auth/auth_event.dart';
+import 'package:login_page_flutter/bloc/auth/auth_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -59,24 +57,27 @@ class _HomePageState extends State<HomePage> {
                   child: BlocListener<AuthBloc, AuthState>( // BlocListener sadece logout event'ini dinleyecek
 
                     listener: (context, state) {
-                      // Logout event'i AuthInitial state'ine geçtiğinde main.dart zaten LoginPage'e yönlendirecektir.
-                      // Bu yüzden burada manuel bir Navigator.pushAndRemoveUntil gerekmez.
-                      // Eğer logout sırasında bir hata olursa, burada SnackBar gösterebilirsiniz.
-                      state.whenOrNull(
+
+                      state.maybeWhen(
+
                         error: (message) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Çıkış Hatası: $message'), backgroundColor: Colors.red),
                           );
                         },
+
+                        orElse: () => null,
                       );
                     },
 
                     child: IconButton(
                       icon: const Icon(Icons.logout, color: Colors.white, size: 30),
+
                       onPressed: () {
                         // Freezed event'i doğru şekilde çağır
                         context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
                       },
+
                       tooltip: 'Çıkış Yap',
                     ),
                   ),
@@ -85,7 +86,9 @@ class _HomePageState extends State<HomePage> {
                 // Kullanıcı adını BlocBuilder ile AuthBloc'tan al
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
+
                     String userName = 'Misafir'; // Varsayılan değer
+
                     state.whenOrNull(
 
                       success: (message, authToken, rememberMeToken, user) {
@@ -99,10 +102,12 @@ class _HomePageState extends State<HomePage> {
                           userName = 'Hoş Geldin!'; // Kullanıcı objesi var ama isim yoksa
                         }
                       },
+
                       // Diğer durumlar için herhangi bir şey yapmaya gerek yok, varsayılan 'Misafir' kalır
                       // AuthInitial veya AuthLoading gibi durumlarda buraya gelinmemeli,
                       // çünkü main.dart bunları farklı sayfalara yönlendirecektir.
                       // Ancak olası bir senaryo için varsayılan değer mantıklı.
+
                     );
 
 

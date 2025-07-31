@@ -15,10 +15,12 @@ import 'package:login_page_flutter/bloc/auth/auth_bloc.dart';
 import 'package:login_page_flutter/bloc/auth/auth_event.dart';
 
 class VerifyRegistrationEmailPage extends StatefulWidget {
+
   final String email;
   final String name;
   final String password;
   final String passwordConfirmation;
+
 
   const VerifyRegistrationEmailPage({
     Key? key,
@@ -33,6 +35,7 @@ class VerifyRegistrationEmailPage extends StatefulWidget {
 }
 
 class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPage> {
+
   final TextEditingController codeController = TextEditingController();
   final FormController _formController = FormController();
 
@@ -41,14 +44,17 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
   @override
   void initState() {
     super.initState();
+
     codeController.addListener(_validateCode);
   }
 
   void _validateCode() {
+
     final result = _formController.formValid({
       "value": codeController.text,
       "validators": [{"type": "empty"}, {"type": "len", "len": 6}]
     });
+
     setState(() {
       _codeErrorText = result["status"] == "ok" ? null : result["message"];
     });
@@ -56,13 +62,17 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
 
   @override
   void dispose() {
+
     codeController.removeListener(_validateCode);
     codeController.dispose();
+
     super.dispose();
   }
 
   void _showSnackBar(String message, {bool isError = true}) {
+
     if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -74,13 +84,18 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       appBar: AppBar(
         title: const Text('E-posta Doğrulama'),
         backgroundColor: Colors.blue,
       ),
+
       body: BlocListener<EmailVerificationBloc, EmailVerificationState>(
+
         listener: (context, state) {
-          state.whenOrNull(
+
+          state.maybeWhen(
+
             success: (message) {
               _showSnackBar(message, isError: false);
 
@@ -93,14 +108,21 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                     (Route<dynamic> route) => false,
               );
             },
+
             error: (message) {
               _showSnackBar(message, isError: true);
             },
             cooldown: (remainingSeconds) {},
+
+            orElse: () => null,
+
           );
         },
+
         child: BlocBuilder<EmailVerificationBloc, EmailVerificationState>(
+
           builder: (context, state) {
+
             final int remainingSeconds = (state is Cooldown) ? state.remainingSeconds : 0;
             final bool isVerifying = state is Loading;
             final bool canResendCode = remainingSeconds == 0 && !isVerifying;
@@ -110,25 +132,35 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
             final countdownText = remainingSeconds > 0 ? '$minutes:${seconds.toString().padLeft(2, '0')}' : '';
 
             return Center(
+
               child: SingleChildScrollView(
+
                 padding: const EdgeInsets.all(20.0),
+
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
+
                   children: [
+
                     const Icon(Icons.verified_user, size: 100, color: Colors.blue),
                     const SizedBox(height: 30),
+
                     Text(
                       '${widget.email} adresinize bir doğrulama kodu gönderildi. Lütfen kodu girin.',
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 16),
                     ),
+
                     const SizedBox(height: 10),
+
                     if (remainingSeconds > 0)
                       Text(
                         'Yeni kod göndermek için kalan süre: $countdownText',
                         style: const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
+
                     const SizedBox(height: 30),
+
                     CustomTextField(
                       icon: Icons.vpn_key,
                       label: "Doğrulama Kodu",
@@ -138,29 +170,43 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                       isPassword: false,
                       errorText: _codeErrorText,
                     ),
+
                     const SizedBox(height: 40),
+
                     SizedBox(
                       height: 42,
                       width: 180,
+
                       child: CustomButton(
                         text: isVerifying ? "Doğrulanıyor..." : "Hesabı Doğrula",
                         onPressed: isVerifying ? null : () async {
                           _validateCode();
 
                           if (_codeErrorText == null) {
+
                             String deviceName = 'unknown_device';
+
                             try {
+
                               DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
                               if (defaultTargetPlatform == TargetPlatform.android) {
+
                                 AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
                                 deviceName = androidInfo.model;
+
                               } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+
                                 IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
                                 deviceName = iosInfo.name;
+
                               } else {
+
                                 deviceName = 'flutter_app_desktop';
                               }
+
                             } catch (e) {
+
                               print("Cihaz adı alınırken hata oluştu (Verify Email): $e");
                             }
 
@@ -174,13 +220,16 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                                 deviceName: deviceName,
                               ),
                             );
+
                           } else {
                             _showSnackBar("Lütfen doğrulama kodunu girin.", isError: true);
                           }
                         },
                       ),
                     ),
+
                     const SizedBox(height: 20),
+
                     SizedBox(
                       height: 42,
                       width: 180,
@@ -188,21 +237,32 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                         text: isVerifying
                             ? "Gönderiliyor..."
                             : (canResendCode ? "Kodu Yeniden Gönder" : "Yeniden Gönder ($countdownText)"),
+
                         onPressed: canResendCode ? () async {
                           _showSnackBar("Kod yeniden gönderiliyor...", isError: false);
                           String deviceName = 'unknown_device';
+
                           try {
+
                             DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
                             if (defaultTargetPlatform == TargetPlatform.android) {
+
                               AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
                               deviceName = androidInfo.model;
+
                             } else if (defaultTargetPlatform == TargetPlatform.iOS) {
+
                               IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
                               deviceName = iosInfo.name;
+
                             } else {
+
                               deviceName = 'flutter_app_desktop';
                             }
+
                           } catch (e) {
+
                             print("Cihaz adı alınırken hata oluştu (Resend Email): $e");
                           }
 

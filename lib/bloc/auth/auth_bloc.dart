@@ -1,5 +1,3 @@
-
-
 import 'package:bloc/bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +31,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthInitial());
   }
 
-  // --- _onLoginRequested Metodu ---
+
   Future<void> _onLoginRequested(LoginRequested event, Emitter<AuthState> emit) async {
 
     print('🔶 AuthBloc: Login event received. Emitting AuthLoading.');
@@ -152,7 +150,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // --- _onRegisterRequested Metodu ---
+
   Future<void> _onRegisterRequested(RegisterRequested event, Emitter<AuthState> emit) async {
 
     emit(const AuthLoading());
@@ -241,7 +239,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // --- _onAutoLoginRequested Metodu ---
+
   Future<void> _onAutoLoginRequested(AutoLoginRequested event, Emitter<AuthState> emit) async {
 
     if (event.rememberToken.isEmpty) {
@@ -370,7 +368,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  // --- _onLogoutRequested Metodu ---
+
   Future<void> _onLogoutRequested(LogoutRequested event, Emitter<AuthState> emit) async {
 
     print('🔶 AuthBloc: Logout event received. Emitting AuthLoading.');
