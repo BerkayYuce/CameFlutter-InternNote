@@ -19,6 +19,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AuthEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
     required TResult Function(
       String email,
       String password,
@@ -40,6 +41,7 @@ mixin _$AuthEvent {
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
     TResult? Function(
       String email,
       String password,
@@ -61,6 +63,7 @@ mixin _$AuthEvent {
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
     TResult Function(
       String email,
       String password,
@@ -83,6 +86,7 @@ mixin _$AuthEvent {
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
     required TResult Function(LoginRequested value) loginRequested,
     required TResult Function(RegisterRequested value) registerRequested,
     required TResult Function(AutoLoginRequested value) autoLoginRequested,
@@ -90,6 +94,7 @@ mixin _$AuthEvent {
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
     TResult? Function(LoginRequested value)? loginRequested,
     TResult? Function(RegisterRequested value)? registerRequested,
     TResult? Function(AutoLoginRequested value)? autoLoginRequested,
@@ -97,6 +102,7 @@ mixin _$AuthEvent {
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
     TResult Function(LoginRequested value)? loginRequested,
     TResult Function(RegisterRequested value)? registerRequested,
     TResult Function(AutoLoginRequested value)? autoLoginRequested,
@@ -123,6 +129,181 @@ class _$AuthEventCopyWithImpl<$Res, $Val extends AuthEvent>
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+abstract class _$$ResetRequestedImplCopyWith<$Res> {
+  factory _$$ResetRequestedImplCopyWith(
+    _$ResetRequestedImpl value,
+    $Res Function(_$ResetRequestedImpl) then,
+  ) = __$$ResetRequestedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$ResetRequestedImplCopyWithImpl<$Res>
+    extends _$AuthEventCopyWithImpl<$Res, _$ResetRequestedImpl>
+    implements _$$ResetRequestedImplCopyWith<$Res> {
+  __$$ResetRequestedImplCopyWithImpl(
+    _$ResetRequestedImpl _value,
+    $Res Function(_$ResetRequestedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AuthEvent
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$ResetRequestedImpl
+    with DiagnosticableTreeMixin
+    implements ResetRequested {
+  const _$ResetRequestedImpl();
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'AuthEvent.resetRequested()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'AuthEvent.resetRequested'));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$ResetRequestedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
+    required TResult Function(
+      String email,
+      String password,
+      String deviceName,
+      bool rememberMe,
+    )
+    loginRequested,
+    required TResult Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String deviceName,
+    )
+    registerRequested,
+    required TResult Function(String rememberToken, String deviceName)
+    autoLoginRequested,
+    required TResult Function() logoutRequested,
+  }) {
+    return resetRequested();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
+    TResult? Function(
+      String email,
+      String password,
+      String deviceName,
+      bool rememberMe,
+    )?
+    loginRequested,
+    TResult? Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String deviceName,
+    )?
+    registerRequested,
+    TResult? Function(String rememberToken, String deviceName)?
+    autoLoginRequested,
+    TResult? Function()? logoutRequested,
+  }) {
+    return resetRequested?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
+    TResult Function(
+      String email,
+      String password,
+      String deviceName,
+      bool rememberMe,
+    )?
+    loginRequested,
+    TResult Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String deviceName,
+    )?
+    registerRequested,
+    TResult Function(String rememberToken, String deviceName)?
+    autoLoginRequested,
+    TResult Function()? logoutRequested,
+    required TResult orElse(),
+  }) {
+    if (resetRequested != null) {
+      return resetRequested();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
+    required TResult Function(LoginRequested value) loginRequested,
+    required TResult Function(RegisterRequested value) registerRequested,
+    required TResult Function(AutoLoginRequested value) autoLoginRequested,
+    required TResult Function(LogoutRequested value) logoutRequested,
+  }) {
+    return resetRequested(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
+    TResult? Function(LoginRequested value)? loginRequested,
+    TResult? Function(RegisterRequested value)? registerRequested,
+    TResult? Function(AutoLoginRequested value)? autoLoginRequested,
+    TResult? Function(LogoutRequested value)? logoutRequested,
+  }) {
+    return resetRequested?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
+    TResult Function(LoginRequested value)? loginRequested,
+    TResult Function(RegisterRequested value)? registerRequested,
+    TResult Function(AutoLoginRequested value)? autoLoginRequested,
+    TResult Function(LogoutRequested value)? logoutRequested,
+    required TResult orElse(),
+  }) {
+    if (resetRequested != null) {
+      return resetRequested(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ResetRequested implements AuthEvent {
+  const factory ResetRequested() = _$ResetRequestedImpl;
 }
 
 /// @nodoc
@@ -251,6 +432,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
     required TResult Function(
       String email,
       String password,
@@ -276,6 +458,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
     TResult? Function(
       String email,
       String password,
@@ -301,6 +484,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
     TResult Function(
       String email,
       String password,
@@ -330,6 +514,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
     required TResult Function(LoginRequested value) loginRequested,
     required TResult Function(RegisterRequested value) registerRequested,
     required TResult Function(AutoLoginRequested value) autoLoginRequested,
@@ -341,6 +526,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
     TResult? Function(LoginRequested value)? loginRequested,
     TResult? Function(RegisterRequested value)? registerRequested,
     TResult? Function(AutoLoginRequested value)? autoLoginRequested,
@@ -352,6 +538,7 @@ class _$LoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
     TResult Function(LoginRequested value)? loginRequested,
     TResult Function(RegisterRequested value)? registerRequested,
     TResult Function(AutoLoginRequested value)? autoLoginRequested,
@@ -528,6 +715,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
     required TResult Function(
       String email,
       String password,
@@ -559,6 +747,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
     TResult? Function(
       String email,
       String password,
@@ -590,6 +779,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
     TResult Function(
       String email,
       String password,
@@ -625,6 +815,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
     required TResult Function(LoginRequested value) loginRequested,
     required TResult Function(RegisterRequested value) registerRequested,
     required TResult Function(AutoLoginRequested value) autoLoginRequested,
@@ -636,6 +827,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
     TResult? Function(LoginRequested value)? loginRequested,
     TResult? Function(RegisterRequested value)? registerRequested,
     TResult? Function(AutoLoginRequested value)? autoLoginRequested,
@@ -647,6 +839,7 @@ class _$RegisterRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
     TResult Function(LoginRequested value)? loginRequested,
     TResult Function(RegisterRequested value)? registerRequested,
     TResult Function(AutoLoginRequested value)? autoLoginRequested,
@@ -778,6 +971,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
     required TResult Function(
       String email,
       String password,
@@ -803,6 +997,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
     TResult? Function(
       String email,
       String password,
@@ -828,6 +1023,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
     TResult Function(
       String email,
       String password,
@@ -857,6 +1053,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
     required TResult Function(LoginRequested value) loginRequested,
     required TResult Function(RegisterRequested value) registerRequested,
     required TResult Function(AutoLoginRequested value) autoLoginRequested,
@@ -868,6 +1065,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
     TResult? Function(LoginRequested value)? loginRequested,
     TResult? Function(RegisterRequested value)? registerRequested,
     TResult? Function(AutoLoginRequested value)? autoLoginRequested,
@@ -879,6 +1077,7 @@ class _$AutoLoginRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
     TResult Function(LoginRequested value)? loginRequested,
     TResult Function(RegisterRequested value)? registerRequested,
     TResult Function(AutoLoginRequested value)? autoLoginRequested,
@@ -959,6 +1158,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
+    required TResult Function() resetRequested,
     required TResult Function(
       String email,
       String password,
@@ -984,6 +1184,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? resetRequested,
     TResult? Function(
       String email,
       String password,
@@ -1009,6 +1210,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? resetRequested,
     TResult Function(
       String email,
       String password,
@@ -1038,6 +1240,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
+    required TResult Function(ResetRequested value) resetRequested,
     required TResult Function(LoginRequested value) loginRequested,
     required TResult Function(RegisterRequested value) registerRequested,
     required TResult Function(AutoLoginRequested value) autoLoginRequested,
@@ -1049,6 +1252,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ResetRequested value)? resetRequested,
     TResult? Function(LoginRequested value)? loginRequested,
     TResult? Function(RegisterRequested value)? registerRequested,
     TResult? Function(AutoLoginRequested value)? autoLoginRequested,
@@ -1060,6 +1264,7 @@ class _$LogoutRequestedImpl
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
+    TResult Function(ResetRequested value)? resetRequested,
     TResult Function(LoginRequested value)? loginRequested,
     TResult Function(RegisterRequested value)? registerRequested,
     TResult Function(AutoLoginRequested value)? autoLoginRequested,

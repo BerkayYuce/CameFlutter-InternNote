@@ -89,22 +89,26 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text('Came Özak'),
         backgroundColor: Colors.blue,
       ),
+
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           state.whenOrNull(
+
             loading: () {
               setState(() {
                 _isButtonLoading = true;
               });
             },
-            success: (message, authToken, rememberMeToken, user) {
-              setState(() {
-                _isButtonLoading = false;
-              });
-              // Başarılı giriş mesajı gösterilebilir, ancak main.dart'taki listener yönlendirdiği için
-              // bu mesaj HomePage'e geçmeden hemen önce kısa süreli görünebilir.
-              // _showSnackBar(message, isError: false);
-            },
+
+            // success: (message, authToken, rememberMeToken, user) {
+            //   setState(() {
+            //     _isButtonLoading = false;
+            //   });
+            //   // Başarılı giriş mesajı gösterilebilir, ancak main.dart'taki listener yönlendirdiği için
+            //   // bu mesaj HomePage'e geçmeden hemen önce kısa süreli görünebilir.
+            //   // _showSnackBar(message, isError: false);
+            // },
+
             error: (message) {
               setState(() {
                 _isButtonLoading = false;

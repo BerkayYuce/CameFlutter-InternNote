@@ -6,6 +6,10 @@ part 'auth_event.freezed.dart';
 
 @freezed
 abstract class AuthEvent with _$AuthEvent {
+
+
+  const factory AuthEvent.resetRequested() = ResetRequested;
+
   const factory AuthEvent.loginRequested({
     required String email,
     required String password,

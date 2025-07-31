@@ -8,6 +8,9 @@ import 'package:login_page_flutter/widgets/custom_text_field.dart';
 
 import 'package:login_page_flutter/controllers/form_controller.dart';
 
+import '../bloc/auth/auth_bloc.dart';
+import '../bloc/auth/auth_event.dart';
+
 
 class NewPasswordPage extends StatefulWidget {
   final String email;
@@ -110,17 +113,24 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       body: BlocListener<PasswordResetBloc, PasswordResetState>(
         listener: (context, state) {
           state.whenOrNull(
-            success: (message) { // İsimlendirme düzeltildi
+
+            success: (message) {
+
               _showSnackBar(message, isError: false);
+
+              context.read<AuthBloc>().add(const AuthEvent.resetRequested());
+
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginPage()),
                     (Route<dynamic> route) => false,
               );
             },
-            codeSentSuccess: (message, email) { // İsimlendirme düzeltildi
+
+            codeSentSuccess: (message, email) {
               _showSnackBar(message, isError: false);
             },
-            error: (message) { // İsimlendirme düzeltildi
+
+            error: (message) {
               _showSnackBar(message, isError: true);
             },
           );

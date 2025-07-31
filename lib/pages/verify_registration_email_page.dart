@@ -1,3 +1,5 @@
+// lib/pages/verify_registration_email_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_page_flutter/bloc/email_verification/email_verification_bloc.dart';
@@ -6,8 +8,11 @@ import 'package:login_page_flutter/widgets/custom_button.dart';
 import 'package:login_page_flutter/widgets/custom_text_field.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:login_page_flutter/controllers/form_controller.dart';
+
+// AuthBloc importunu ekliyoruz
+import 'package:login_page_flutter/bloc/auth/auth_bloc.dart';
+import 'package:login_page_flutter/bloc/auth/auth_event.dart';
 
 class VerifyRegistrationEmailPage extends StatefulWidget {
   final String email;
@@ -76,25 +81,28 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
       body: BlocListener<EmailVerificationBloc, EmailVerificationState>(
         listener: (context, state) {
           state.whenOrNull(
-            success: (message) { // İsimlendirme düzeltildi
+            success: (message) {
               _showSnackBar(message, isError: false);
-              Navigator.of(context).pushAndRemoveUntil( // Tüm yığını temizleyip LoginPage'e git
+
+
+              // Email doğrulaması başarılı olduğunda AuthBloc'un durumunu sıfırla.
+              context.read<AuthBloc>().add(const AuthEvent.resetRequested());
+
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (context) => const LoginPage()),
                     (Route<dynamic> route) => false,
               );
             },
-            error: (message) { // İsimlendirme düzeltildi
+            error: (message) {
               _showSnackBar(message, isError: true);
             },
-            cooldown: (remainingSeconds) { // İsimlendirme düzeltildi, message kaldırıldı
-              // Cooldown mesajı UI'da gösterildiği için ekstra snackbar'a gerek yok
-            },
+            cooldown: (remainingSeconds) {},
           );
         },
         child: BlocBuilder<EmailVerificationBloc, EmailVerificationState>(
           builder: (context, state) {
-            final int remainingSeconds = (state is Cooldown) ? state.remainingSeconds : 0; // İsimlendirme düzeltildi
-            final bool isVerifying = state is Loading; // İsimlendirme düzeltildi
+            final int remainingSeconds = (state is Cooldown) ? state.remainingSeconds : 0;
+            final bool isVerifying = state is Loading;
             final bool canResendCode = remainingSeconds == 0 && !isVerifying;
 
             final minutes = remainingSeconds ~/ 60;
@@ -157,7 +165,7 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                             }
 
                             context.read<EmailVerificationBloc>().add(
-                              EmailVerificationEvent.verifyEmailRequested( // Freezed event çağrısı düzeltildi
+                              EmailVerificationEvent.verifyEmailRequested(
                                 name: widget.name,
                                 email: widget.email,
                                 password: widget.password,
@@ -199,7 +207,7 @@ class _VerifyRegistrationEmailPageState extends State<VerifyRegistrationEmailPag
                           }
 
                           context.read<EmailVerificationBloc>().add(
-                            EmailVerificationEvent.resendVerificationCodeRequested( // Freezed event çağrısı düzeltildi
+                            EmailVerificationEvent.resendVerificationCodeRequested(
                               name: widget.name,
                               email: widget.email,
                               password: widget.password,

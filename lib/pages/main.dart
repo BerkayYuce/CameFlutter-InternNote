@@ -207,9 +207,11 @@ class _MyAppState extends State<MyApp> {
             return BlocListener<AuthBloc, AuthState>(
 
               listener: (listenerContext, state) {
+
+                print('✅ main.dart listener: Received state: ${state.runtimeType}');
+
                 // listener: maybeWhen ile yan etkileri yönetme
                 state.maybeWhen(
-
                   success: (message, authToken, rememberMeToken, user) {
                     print('🎉 main.dart Listener: AuthSuccess state received! Message: $message');
                     ScaffoldMessenger.of(listenerContext).showSnackBar(

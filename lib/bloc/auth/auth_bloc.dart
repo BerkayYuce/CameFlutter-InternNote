@@ -11,6 +11,8 @@ import 'package:login_page_flutter/bloc/auth/auth_state.dart';
 import 'package:login_page_flutter/config/app_config.dart';
 import 'package:login_page_flutter/services/httpStatusCodes.dart';
 
+
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   final Dio _dio;
@@ -21,6 +23,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<RegisterRequested>((event, emit) => _onRegisterRequested(event, emit));
     on<AutoLoginRequested>((event, emit) => _onAutoLoginRequested(event, emit));
     on<LogoutRequested>((event, emit) => _onLogoutRequested(event, emit));
+    on<ResetRequested>((event, emit) => _onResetRequested(event, emit));
+
+  }
+
+
+  Future<void> _onResetRequested(ResetRequested event, Emitter<AuthState> emit) async {
+    print('🔄 AuthBloc: ResetRequested event received. Emitting AuthInitial.');
+    emit(const AuthInitial());
   }
 
   // --- _onLoginRequested Metodu ---
