@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:login_page_flutter/bloc/auth/auth_bloc.dart';
 import 'package:login_page_flutter/bloc/auth/auth_event.dart';
 import 'package:login_page_flutter/bloc/auth/auth_state.dart';
+import 'package:login_page_flutter/pages/login_page.dart';
+import 'package:login_page_flutter/pages/profile_page.dart'; // Yeni import
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -13,30 +15,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   final List<Map<String, String>> items = List.generate(
-    20,
+    30,
         (index) => {
-      'title': 'Öğe ${index + 1}',
-      'description': 'Bu, ${index + 1}. öğenin açıklamasıdır. Daha fazla bilgi buraya yazılabilir.',
+      'title': 'Staj gün ${index + 1}',
+      'description': 'Bu, ${index + 1}. günün açıklamasıdır. Daha fazla bilgi buraya yazılabilir.',
     },
   );
 
   @override
   Widget build(BuildContext context) {
-
-    print('🚀 HomePage: build metodu çağrıldı. HomePage yükleniyor.');
-
     return Scaffold(
       body: Column(
         children: [
-
           // HEADER
           Container(
-
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-
             decoration: BoxDecoration(
               color: Colors.blue.shade700,
               borderRadius: const BorderRadius.only(
@@ -44,111 +39,119 @@ class _HomePageState extends State<HomePage> {
                 bottomRight: Radius.circular(30),
               ),
             ),
-
             child: Column(
-
               crossAxisAlignment: CrossAxisAlignment.start,
-
               children: [
-
                 Align(
                   alignment: Alignment.topRight,
-
-                  child: BlocListener<AuthBloc, AuthState>( // BlocListener sadece logout event'ini dinleyecek
-
-                    listener: (context, state) {
-
-                      state.maybeWhen(
-
-                        error: (message) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Çıkış Hatası: $message'), backgroundColor: Colors.red),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min, // Eklenen Row'un boyutunu minimuma indirdik
+                    children: [
+                      // PROFİL SAYFASINA GİTME BUTONU
+                      IconButton(
+                        icon: const Icon(Icons.account_circle, color: Colors.white, size: 30),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const ProfilePage()),
                           );
                         },
-
-                        orElse: () => null,
-                      );
-                    },
-
-                    child: IconButton(
-                      icon: const Icon(Icons.logout, color: Colors.white, size: 30),
-
-                      onPressed: () {
-                        // Freezed event'i doğru şekilde çağır
-                        context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
-                      },
-
-                      tooltip: 'Çıkış Yap',
-                    ),
+                        tooltip: 'Profil Sayfası',
+                      ),
+                      const SizedBox(width: 10),
+                      // ÇIKIŞ BUTONU
+                      BlocListener<AuthBloc, AuthState>(
+                        listener: (context, state) {
+                          state.maybeWhen(
+                            initial: () {
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (context) => const LoginPage()),
+                                    (Route<dynamic> route) => false,
+                              );
+                            },
+                            error: (message) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Çıkış Hatası: $message'), backgroundColor: Colors.red),
+                              );
+                            },
+                            orElse: () => null,
+                          );
+                        },
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            final isLoading = state is AuthLoading;
+                            return IconButton(
+                              icon: isLoading
+                                  ? const CircularProgressIndicator(color: Colors.white)
+                                  : const Icon(Icons.logout, color: Colors.white, size: 30),
+                              onPressed: isLoading
+                                  ? null
+                                  : () {
+                                context.read<AuthBloc>().add(const AuthEvent.logoutRequested());
+                              },
+                              tooltip: 'Çıkış Yap',
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-
-                // Kullanıcı adını BlocBuilder ile AuthBloc'tan al
                 BlocBuilder<AuthBloc, AuthState>(
                   builder: (context, state) {
-
-                    String userName = 'Misafir'; // Varsayılan değer
-
-                    state.whenOrNull(
-
+                    String userName = 'Misafir';
+                    String userEmail = 'Email bilgisi yok';
+                    state.maybeWhen(
                       success: (message, authToken, rememberMeToken, user) {
-
-                        if (user != null && user.containsKey('name')) {
-
-                          userName = user['name'].toString();
-
-                        } else {
-
-                          userName = 'Hoş Geldin!'; // Kullanıcı objesi var ama isim yoksa
+                        if (user != null) {
+                          if (user.containsKey('name')) {
+                            userName = user['name'].toString();
+                          }
+                          if (user.containsKey('email')) {
+                            userEmail = user['email'].toString();
+                          }
                         }
                       },
-
-                      // Diğer durumlar için herhangi bir şey yapmaya gerek yok, varsayılan 'Misafir' kalır
-                      // AuthInitial veya AuthLoading gibi durumlarda buraya gelinmemeli,
-                      // çünkü main.dart bunları farklı sayfalara yönlendirecektir.
-                      // Ancak olası bir senaryo için varsayılan değer mantıklı.
-
+                      orElse: () => null,
                     );
-
-
-                    return Text(
-
-                      'Hoş geldin, $userName!',
-
-                      style: const TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Hoş geldin, $userName!',
+                          style: const TextStyle(fontSize: 26, color: Colors.white, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          userEmail, // Kullanıcının e-posta adresini gösteren widget
+                          style: const TextStyle(fontSize: 16, color: Colors.white70),
+                        ),
+                      ],
                     );
                   },
                 ),
-
                 const SizedBox(height: 8),
-
                 const Text(
-                  'Görevlerin aşağıda listelendi.',
+                  'Staj günlerin aşağıda listelendi.',
                   style: TextStyle(fontSize: 16, color: Colors.white70),
                 ),
               ],
             ),
           ),
-
           Expanded(
             child: ListView.builder(
-
               padding: const EdgeInsets.all(20),
               itemCount: items.length,
               itemBuilder: (context, index) {
-
                 final item = items[index];
                 return Card(
-
                   margin: const EdgeInsets.only(bottom: 10),
                   elevation: 5,
-
                   child: ExpansionTile(
                     leading: const Icon(Icons.task),
                     title: Text(item['title']!),
                     trailing: const Icon(Icons.expand_more),
                     children: [
-
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                         child: Text(

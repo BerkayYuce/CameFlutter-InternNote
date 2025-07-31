@@ -27,6 +27,8 @@ import 'package:login_page_flutter/services/httpStatusCodes.dart';
 import 'package:login_page_flutter/bloc/auth/auth_event.dart';
 import 'package:login_page_flutter/bloc/auth/auth_state.dart';
 
+import '../bloc/profile/profile_bloc.dart';
+
 
 // Hata ayıklama için BlocObserver
 class SimpleBlocObserver extends BlocObserver {
@@ -111,6 +113,12 @@ void main() async {
         BlocProvider<PasswordResetBloc>(
           create: (context) => PasswordResetBloc(dio, prefs),
         ),
+
+
+        BlocProvider<ProfileBloc>(
+          create: (context) => ProfileBloc(dio, prefs),
+        ),
+
       ],
 
       child: MyApp(deviceName: deviceName, prefs: prefs),
