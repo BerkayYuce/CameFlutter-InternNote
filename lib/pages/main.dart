@@ -118,6 +118,8 @@ void main() async {
   );
 }
 
+
+
 class MyApp extends StatefulWidget {
 
   final String deviceName;
@@ -154,145 +156,200 @@ class _MyAppState extends State<MyApp> {
     } else {
 
       print('🚀 MyApp: No rememberToken found. AuthBloc remains AuthInitial.');
+      //Token yoksa durum AuthInitial olarak kalır ve LoginPage gösterilir.
+      //Bu durumda AuthBloca reset eventi göndermeye gerek yoktur.
+
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Main',
+      title: 'Ana Sayfa',
       theme: ThemeData(primarySwatch: Colors.blue),
       debugShowCheckedModeBanner: false,
-
-      initialRoute: '/',
-
-      onGenerateRoute: (settings) {
-        Widget page;
-
-        switch (settings.name) {
-          case '/':
-            page = const LoginPage();
-            break;
-          case '/home':
-            page = const HomePage();
-            break;
-          case '/register':
-            page = const RegisterPage();
-            break;
-          case '/password':
-            page = const PasswordPage();
-            break;
-          case '/verify-email':
-
-            final args = settings.arguments as Map<String, dynamic>?;
-
-            page = VerifyRegistrationEmailPage(
-              email: args?['email'] ?? '',
-              name: args?['name'] ?? '',
-              password: args?['password'] ?? '',
-              passwordConfirmation: args?['passwordConfirmation'] ?? '',
-            );
-
-            break;
-
-          default:
-          //Bilinmeyen bir rota geldiğinde varsayılan olarak LoginPage'e yönlendirme
-            print('⚠️ main.dart: Unknown route: ${settings.name}. Defaulting to LoginPage.');
-
-            page = const LoginPage();
-            break;
-        }
-
-        return MaterialPageRoute(
-          builder: (routeContext) {
-
-            return BlocListener<AuthBloc, AuthState>(
-
-              listener: (listenerContext, state) {
-
-                print('✅ main.dart listener: Received state: ${state.runtimeType}');
-
-                // listener: maybeWhen ile yan etkileri yönetme
-                state.maybeWhen(
-
-                  success: (message, authToken, rememberMeToken, user) {
-
-                    print('🎉 main.dart Listener: AuthSuccess state received! Message: $message');
-
-                    ScaffoldMessenger.of(listenerContext).showSnackBar(
-                      SnackBar(content: Text(message), backgroundColor: Colors.green),
-                    );
-
-                    print('🎉 main.dart Listener: Navigating to HomePage via named route and clearing stack.');
-
-                    Navigator.of(listenerContext).pushNamedAndRemoveUntil('/home', (route) => false);
-                  },
-
-
-                  error: (message) {
-
-                    print('🔴 main.dart Listener: AuthError state received! Message: $message');
-
-                    ScaffoldMessenger.of(listenerContext).showSnackBar(
-                      SnackBar(content: Text(message), backgroundColor: Colors.red),
-                    );
-
-                    print('🔴 main.dart Listener: Navigating to LoginPage due to error via named route and clearing stack.');
-
-                    Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
-                  },
-
-
-                  emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
-
-                    print('🟡 main.dart Listener: EmailVerificationRequired state received! Message: $message');
-
-                    ScaffoldMessenger.of(listenerContext).showSnackBar(
-                      SnackBar(content: Text(message), backgroundColor: Colors.orange),
-                    );
-
-                    print('🟡 main.dart Listener: Navigating to verify-email page via named route.');
-
-                    Navigator.of(listenerContext).pushReplacementNamed(
-                      '/verify-email',
-                      arguments: {
-                        'email': email,
-                        'name': name,
-                        'password': password,
-                        'passwordConfirmation': passwordConfirmation,
-                      },
-                    );
-                  },
-
-
-                  initial: () {
-
-                    print('🔄 main.dart Listener: AuthInitial state received. Ensuring navigation to root.');
-                    // Koşulu kaldırarak veya sadeleştirerek her zaman giriş sayfasına yönlendir.
-                    // Bu, logout sonrası her zaman login ekranına dönmenizi sağlar.
-
-                    Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
-                  },
-
-
-                  loading: () {
-
-                    print('⏳ main.dart Listener: AuthLoading state received. No explicit navigation.');
-                  },
-                  orElse: () {
-
-                    print('🤔 main.dart Listener: Unhandled state in maybeWhen: ${state.runtimeType}. No action taken.');
-                  },
-                );
+      home: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            error: (message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.red),
+              );
+            },
+            emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message), backgroundColor: Colors.orange),
+              );
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (_) => VerifyRegistrationEmailPage(
+                    email: email,
+                    name: name,
+                    password: password,
+                    passwordConfirmation: passwordConfirmation,
+                  ),
+                ),
+              );
+            },
+            orElse: () => null,
+          );
+        },
+        child: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            return state.maybeWhen(
+              success: (message, authToken, rememberMeToken, user) {
+                // Giriş başarılıysa HomePage'i göster.
+                return const HomePage();
               },
-
-              child: page,
+              orElse: () {
+                // Varsayılan olarak LoginPage'i göster.
+                // Bu, AuthInitial, Loading, Error gibi tüm durumlar için geçerlidir.
+                return const LoginPage();
+              },
             );
           },
-
-          settings: settings,
-        );
-      },
+        ),
+      ),
     );
   }
 }
+
+  // @override
+  // Widget build(BuildContext context) {
+  //   return MaterialApp(
+  //
+  //     title: 'Ana sayfa',
+  //     theme: ThemeData(primarySwatch: Colors.blue),
+  //     debugShowCheckedModeBanner: false,
+  //
+  //     initialRoute: '/',
+  //
+  //     onGenerateRoute: (settings) {
+  //       Widget page;
+  //
+  //       switch (settings.name) {
+  //         case '/':
+  //           page = const LoginPage();
+  //           break;
+  //         case '/home':
+  //           page = const HomePage();
+  //           break;
+  //         case '/register':
+  //           page = const RegisterPage();
+  //           break;
+  //         case '/password':
+  //           page = const PasswordPage();
+  //           break;
+  //         case '/verify-email':
+  //
+  //           final args = settings.arguments as Map<String, dynamic>?;
+  //
+  //           page = VerifyRegistrationEmailPage(
+  //             email: args?['email'] ?? '',
+  //             name: args?['name'] ?? '',
+  //             password: args?['password'] ?? '',
+  //             passwordConfirmation: args?['passwordConfirmation'] ?? '',
+  //           );
+  //
+  //           break;
+  //
+  //         default:
+  //         //Bilinmeyen bir rota geldiğinde varsayılan olarak LoginPage'e yönlendirme
+  //           print('⚠️ main.dart: Unknown route: ${settings.name}. Defaulting to LoginPage.');
+  //
+  //           page = const LoginPage();
+  //           break;
+  //       }
+  //
+  //       return MaterialPageRoute(
+  //         builder: (routeContext) {
+  //
+  //           return BlocListener<AuthBloc, AuthState>(
+  //
+  //             listener: (listenerContext, state) {
+  //
+  //               print('✅ main.dart listener: Received state: ${state.runtimeType}');
+  //
+  //               // listener: maybeWhen ile yan etkileri yönetme
+  //               state.maybeWhen(
+  //
+  //                 success: (message, authToken, rememberMeToken, user) {
+  //
+  //                   print('🎉 main.dart Listener: AuthSuccess state received! Message: $message');
+  //
+  //                   ScaffoldMessenger.of(listenerContext).showSnackBar(
+  //                     SnackBar(content: Text(message), backgroundColor: Colors.green),
+  //                   );
+  //
+  //                   print('🎉 main.dart Listener: Navigating to HomePage via named route and clearing stack.');
+  //
+  //                   Navigator.of(listenerContext).pushNamedAndRemoveUntil('/home', (route) => false);
+  //                 },
+  //
+  //
+  //                 error: (message) {
+  //
+  //                   print('🔴 main.dart Listener: AuthError state received! Message: $message');
+  //
+  //                   ScaffoldMessenger.of(listenerContext).showSnackBar(
+  //                     SnackBar(content: Text(message), backgroundColor: Colors.red),
+  //                   );
+  //
+  //                   print('🔴 main.dart Listener: Navigating to LoginPage due to error via named route and clearing stack.');
+  //
+  //                   Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
+  //                 },
+  //
+  //
+  //                 emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
+  //
+  //                   print('🟡 main.dart Listener: EmailVerificationRequired state received! Message: $message');
+  //
+  //                   ScaffoldMessenger.of(listenerContext).showSnackBar(
+  //                     SnackBar(content: Text(message), backgroundColor: Colors.orange),
+  //                   );
+  //
+  //                   print('🟡 main.dart Listener: Navigating to verify-email page via named route.');
+  //
+  //                   Navigator.of(listenerContext).pushReplacementNamed(
+  //                     '/verify-email',
+  //                     arguments: {
+  //                       'email': email,
+  //                       'name': name,
+  //                       'password': password,
+  //                       'passwordConfirmation': passwordConfirmation,
+  //                     },
+  //                   );
+  //                 },
+  //
+  //
+  //                 initial: () {
+  //
+  //                   print('🔄 main.dart Listener: AuthInitial state received. Ensuring navigation to root.');
+  //                   // Koşulu kaldırarak veya sadeleştirerek her zaman giriş sayfasına yönlendir.
+  //                   // Bu, logout sonrası her zaman login ekranına dönmenizi sağlar.
+  //
+  //                   Navigator.of(listenerContext).pushNamedAndRemoveUntil('/', (route) => false);
+  //                 },
+  //
+  //
+  //                 loading: () {
+  //
+  //                   print('⏳ main.dart Listener: AuthLoading state received. No explicit navigation.');
+  //                 },
+  //                 orElse: () {
+  //
+  //                   print('🤔 main.dart Listener: Unhandled state in maybeWhen: ${state.runtimeType}. No action taken.');
+  //                 },
+  //               );
+  //             },
+  //
+  //             child: page,
+  //           );
+  //         },
+  //
+  //         settings: settings,
+  //       );
+  //     },
+  //   );
+  // }
