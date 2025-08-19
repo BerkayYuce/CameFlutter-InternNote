@@ -2,7 +2,7 @@
 
 Bu proje, Came Özak'taki staj sürecimde geliştirdiğim staj not uygulamasının mobil (Android ve iOS) kullanıcı arayüzüdür. Stajyerlerin günlük notlarını kolayca eklemesini, düzenlemesini ve görüntülemesini sağlar.
 
-Projenin backend kısmı [Buraya Laravel projesinin GitHub linkini ekleyin] deposunda yer almaktadır.
+Projenin backend kısmı https://github.com/BerkayYuce/CameLaravel-InternNote deposunda yer almaktadır.
 
 ---
 
