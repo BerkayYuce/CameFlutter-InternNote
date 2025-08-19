@@ -1,4 +1,4 @@
 // lib/config/app_config.dart
 class AppConfig {
-  static const String baseUrl = 'http://192.168.1.35:8000/api';
+  static const String baseUrl = 'http://[BİLGİSAYAR_IP_ADRESİ]:8000/api';
 }
