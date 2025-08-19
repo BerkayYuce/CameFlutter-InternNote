@@ -37,6 +37,7 @@ mixin _$AuthState {
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
@@ -58,6 +59,7 @@ mixin _$AuthState {
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
@@ -79,6 +81,7 @@ mixin _$AuthState {
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -89,6 +92,7 @@ mixin _$AuthState {
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
@@ -98,6 +102,7 @@ mixin _$AuthState {
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
@@ -107,6 +112,7 @@ mixin _$AuthState {
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) => throw _privateConstructorUsedError;
 }
@@ -198,6 +204,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) {
     return initial();
   }
@@ -223,6 +230,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) {
     return initial?.call();
   }
@@ -248,6 +256,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -265,6 +274,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) {
     return initial(this);
   }
@@ -278,6 +288,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) {
     return initial?.call(this);
   }
@@ -291,6 +302,7 @@ class _$AuthInitialImpl with DiagnosticableTreeMixin implements AuthInitial {
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -371,6 +383,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) {
     return loading();
   }
@@ -396,6 +409,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) {
     return loading?.call();
   }
@@ -421,6 +435,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -438,6 +453,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) {
     return loading(this);
   }
@@ -451,6 +467,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) {
     return loading?.call(this);
   }
@@ -464,6 +481,7 @@ class _$AuthLoadingImpl with DiagnosticableTreeMixin implements AuthLoading {
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) {
     if (loading != null) {
@@ -627,6 +645,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) {
     return success(message, authToken, rememberMeToken, user);
   }
@@ -652,6 +671,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) {
     return success?.call(message, authToken, rememberMeToken, user);
   }
@@ -677,6 +697,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -694,6 +715,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) {
     return success(this);
   }
@@ -707,6 +729,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) {
     return success?.call(this);
   }
@@ -720,6 +743,7 @@ class _$AuthSuccessImpl with DiagnosticableTreeMixin implements AuthSuccess {
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -845,6 +869,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) {
     return error(message);
   }
@@ -870,6 +895,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) {
     return error?.call(message);
   }
@@ -895,6 +921,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -912,6 +939,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) {
     return error(this);
   }
@@ -925,6 +953,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) {
     return error?.call(this);
   }
@@ -938,6 +967,7 @@ class _$AuthErrorImpl with DiagnosticableTreeMixin implements AuthError {
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) {
     if (error != null) {
@@ -1121,6 +1151,7 @@ class _$AuthEmailVerificationRequiredImpl
       String message,
     )
     emailVerificationRequired,
+    required TResult Function() unauthenticated,
   }) {
     return emailVerificationRequired(
       name,
@@ -1152,6 +1183,7 @@ class _$AuthEmailVerificationRequiredImpl
       String message,
     )?
     emailVerificationRequired,
+    TResult? Function()? unauthenticated,
   }) {
     return emailVerificationRequired?.call(
       name,
@@ -1183,6 +1215,7 @@ class _$AuthEmailVerificationRequiredImpl
       String message,
     )?
     emailVerificationRequired,
+    TResult Function()? unauthenticated,
     required TResult orElse(),
   }) {
     if (emailVerificationRequired != null) {
@@ -1206,6 +1239,7 @@ class _$AuthEmailVerificationRequiredImpl
     required TResult Function(AuthError value) error,
     required TResult Function(AuthEmailVerificationRequired value)
     emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
   }) {
     return emailVerificationRequired(this);
   }
@@ -1219,6 +1253,7 @@ class _$AuthEmailVerificationRequiredImpl
     TResult? Function(AuthError value)? error,
     TResult? Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
   }) {
     return emailVerificationRequired?.call(this);
   }
@@ -1232,6 +1267,7 @@ class _$AuthEmailVerificationRequiredImpl
     TResult Function(AuthError value)? error,
     TResult Function(AuthEmailVerificationRequired value)?
     emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
     required TResult orElse(),
   }) {
     if (emailVerificationRequired != null) {
@@ -1263,4 +1299,186 @@ abstract class AuthEmailVerificationRequired implements AuthState {
     _$AuthEmailVerificationRequiredImpl
   >
   get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$AuthUnauthenticatedImplCopyWith<$Res> {
+  factory _$$AuthUnauthenticatedImplCopyWith(
+    _$AuthUnauthenticatedImpl value,
+    $Res Function(_$AuthUnauthenticatedImpl) then,
+  ) = __$$AuthUnauthenticatedImplCopyWithImpl<$Res>;
+}
+
+/// @nodoc
+class __$$AuthUnauthenticatedImplCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res, _$AuthUnauthenticatedImpl>
+    implements _$$AuthUnauthenticatedImplCopyWith<$Res> {
+  __$$AuthUnauthenticatedImplCopyWithImpl(
+    _$AuthUnauthenticatedImpl _value,
+    $Res Function(_$AuthUnauthenticatedImpl) _then,
+  ) : super(_value, _then);
+
+  /// Create a copy of AuthState
+  /// with the given fields replaced by the non-null parameter values.
+}
+
+/// @nodoc
+
+class _$AuthUnauthenticatedImpl
+    with DiagnosticableTreeMixin
+    implements AuthUnauthenticated {
+  const _$AuthUnauthenticatedImpl();
+
+  @override
+  String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
+    return 'AuthState.unauthenticated()';
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties..add(DiagnosticsProperty('type', 'AuthState.unauthenticated'));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$AuthUnauthenticatedImpl);
+  }
+
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() initial,
+    required TResult Function() loading,
+    required TResult Function(
+      String message,
+      String? authToken,
+      String? rememberMeToken,
+      Map<String, dynamic>? user,
+    )
+    success,
+    required TResult Function(String message) error,
+    required TResult Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String message,
+    )
+    emailVerificationRequired,
+    required TResult Function() unauthenticated,
+  }) {
+    return unauthenticated();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? initial,
+    TResult? Function()? loading,
+    TResult? Function(
+      String message,
+      String? authToken,
+      String? rememberMeToken,
+      Map<String, dynamic>? user,
+    )?
+    success,
+    TResult? Function(String message)? error,
+    TResult? Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String message,
+    )?
+    emailVerificationRequired,
+    TResult? Function()? unauthenticated,
+  }) {
+    return unauthenticated?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? initial,
+    TResult Function()? loading,
+    TResult Function(
+      String message,
+      String? authToken,
+      String? rememberMeToken,
+      Map<String, dynamic>? user,
+    )?
+    success,
+    TResult Function(String message)? error,
+    TResult Function(
+      String name,
+      String email,
+      String password,
+      String passwordConfirmation,
+      String message,
+    )?
+    emailVerificationRequired,
+    TResult Function()? unauthenticated,
+    required TResult orElse(),
+  }) {
+    if (unauthenticated != null) {
+      return unauthenticated();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(AuthInitial value) initial,
+    required TResult Function(AuthLoading value) loading,
+    required TResult Function(AuthSuccess value) success,
+    required TResult Function(AuthError value) error,
+    required TResult Function(AuthEmailVerificationRequired value)
+    emailVerificationRequired,
+    required TResult Function(AuthUnauthenticated value) unauthenticated,
+  }) {
+    return unauthenticated(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(AuthInitial value)? initial,
+    TResult? Function(AuthLoading value)? loading,
+    TResult? Function(AuthSuccess value)? success,
+    TResult? Function(AuthError value)? error,
+    TResult? Function(AuthEmailVerificationRequired value)?
+    emailVerificationRequired,
+    TResult? Function(AuthUnauthenticated value)? unauthenticated,
+  }) {
+    return unauthenticated?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(AuthInitial value)? initial,
+    TResult Function(AuthLoading value)? loading,
+    TResult Function(AuthSuccess value)? success,
+    TResult Function(AuthError value)? error,
+    TResult Function(AuthEmailVerificationRequired value)?
+    emailVerificationRequired,
+    TResult Function(AuthUnauthenticated value)? unauthenticated,
+    required TResult orElse(),
+  }) {
+    if (unauthenticated != null) {
+      return unauthenticated(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class AuthUnauthenticated implements AuthState {
+  const factory AuthUnauthenticated() = _$AuthUnauthenticatedImpl;
 }

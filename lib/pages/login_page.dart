@@ -104,24 +104,6 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           state.maybeWhen(
 
-            // loading: () {
-            //   setState(() {
-            //      _isButtonLoading = true;
-            //   });
-            // },
-
-
-            // success: (message, authToken, rememberMeToken, user) {
-            //
-            //   setState(() {
-            //      _isButtonLoading = false;
-            //   });
-            //   // Başarılı giriş mesajı gösterilebilir, ancak main.dart'taki listener yönlendirdiği için
-            //   // bu mesaj HomePage'e geçmeden hemen önce kısa süreli görünebilir.
-            //   // _showSnackBar(message, isError: false);
-            // },
-
-
             error: (message) {
               // setState(() {
               //
@@ -133,15 +115,6 @@ class _LoginPageState extends State<LoginPage> {
             },
 
             orElse: () => null,
-
-            // EmailVerificationRequired durumu main.dart'taki listener tarafından yönlendirileceği için
-            // burada özel bir işlem yapmaya gerek yok, ancak isterseniz mesaj gösterebilirsiniz.
-            // emailVerificationRequired: (name, email, password, passwordConfirmation, message) {
-            //   setState(() {
-            //     _isButtonLoading = false;
-            //   });
-            //   _showSnackBar(message, isError: false);
-            // }
 
           );
         },

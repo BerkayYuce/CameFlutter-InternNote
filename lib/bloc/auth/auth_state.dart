@@ -35,4 +35,7 @@ abstract class AuthState with _$AuthState {
     required String passwordConfirmation,
     required String message,
   }) = AuthEmailVerificationRequired;
+
+  const factory AuthState.unauthenticated() = AuthUnauthenticated;
+
 }

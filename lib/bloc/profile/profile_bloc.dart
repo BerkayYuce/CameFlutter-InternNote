@@ -22,7 +22,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
 
-        final token = _prefs.getString('auth_token');
+        final token = _prefs.getString('authToken');
 
         if (token == null) {
           emit(const ProfileState.error(message: "Oturum açık değil."));
@@ -32,12 +32,12 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         final response = await _dio.get(
 
-          '/api/user/profile',
+          '/user/profile',
 
           options: Options(headers: {'Authorization': 'Bearer $token'}),
         );
 
-        final user = response.data['user'];
+        final user = response.data;
 
         emit(ProfileState.loaded(user: user));
 
@@ -54,7 +54,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
 
-        final token = _prefs.getString('auth_token');
+        final token = _prefs.getString('authToken');
 
         if (token == null) {
 
@@ -65,7 +65,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         await _dio.post(
 
-          '/api/user/change-password',
+          '/user/change-password',
 
           data: {
             'old_password': event.oldPassword,
@@ -94,7 +94,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
       try {
 
-        final token = _prefs.getString('auth_token');
+        final token = _prefs.getString('authToken');
 
         if (token == null) {
 
@@ -105,7 +105,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
 
         final response = await _dio.put(
 
-          '/api/user/profile',
+          '/user/profile',
 
           data: {
             'name': event.name,
@@ -115,7 +115,7 @@ class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
           options: Options(headers: {'Authorization': 'Bearer $token'}),
         );
 
-        final updatedUser = response.data['user'];
+        final updatedUser = response.data;
 
         emit(ProfileState.loaded(
           user: updatedUser,
