@@ -1,16 +1,23 @@
-# login_page_flutter
+# Staj Not Uygulaması Frontend
 
-A new Flutter project.
+Bu proje, Came Özak'taki staj sürecimde geliştirdiğim staj not uygulamasının mobil (Android ve iOS) kullanıcı arayüzüdür. Stajyerlerin günlük notlarını kolayca eklemesini, düzenlemesini ve görüntülemesini sağlar.
 
-## Getting Started
+Projenin backend kısmı [Buraya Laravel projesinin GitHub linkini ekleyin] deposunda yer almaktadır.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+### 🌟 Özellikler
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- **Kullanıcı Doğrulama:** Giriş yapma, kayıt olma, şifre sıfırlama.
+- **Güvenli API İletişimi:** Laravel Sanctum ile token tabanlı kimlik doğrulama.
+- **Staj Notları Yönetimi:** Staj notlarını listeleme, ekleme, güncelleme ve silme.
+- **Offline Özellikler:** Gerekli verileri yerel olarak depolama.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+### 💻 Kullanılan Teknolojiler
+
+- **Flutter 3.x**: Cross-platform mobil uygulama geliştirme framework'ü.
+- **Dart**: Geliştirme dili.
+- **BLoC (Business Logic Component)**: Uygulama durum yönetimi için kullanılan mimari.
+- **Dio**: API istekleri için güçlü bir HTTP istemcisi.
+- **Shared Preferences**: Basit verileri yerel olarak depolama.
+- **GetIt**: Servis bulucu (service locator).
